@@ -1,0 +1,5 @@
+api firebase
+AIzaSyCFYfdp11FjUk0EyOj_PDMbPnRrlM-ibOw
+
+api google cloud console (maps)
+AIzaSyAPbddaN9SLqpNrUFgwIJQyYXSPc48DkMs
