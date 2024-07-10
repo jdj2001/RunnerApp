@@ -2,68 +2,95 @@ package com.example.runnerapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+import android.view.MenuItem;
+import android.widget.ImageButton;
 
-import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
+import com.example.runnerapp.Auth.LoginActivity;
+import com.example.runnerapp.Pestañas.FriendsFragment;
+import com.example.runnerapp.Pestañas.HomeFragment;
+import com.example.runnerapp.Pestañas.LeaderboardFragment;
+import com.example.runnerapp.Pestañas.ProfileFragment;
+import com.example.runnerapp.Pestañas.ProgressFragment;
+import com.example.runnerapp.Pestañas.StatisticsFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    private TextView welcomeTextView;
-    private Button logoutButton;
-    private Button startRaceButton; // Botón para iniciar la carrera
+    private ImageButton profileButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
         mAuth = FirebaseAuth.getInstance();
-
-        welcomeTextView = findViewById(R.id.welcomeTextView);
-        logoutButton = findViewById(R.id.logoutButton);
-        startRaceButton = findViewById(R.id.startRaceButton); // Referenciamos el botón de iniciar carrera
-
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAuth.signOut();
-                startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                finish();
-            }
-        });
+        profileButton = findViewById(R.id.profile_button);
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            welcomeTextView.setText("¡Bienvenido, " + currentUser.getEmail() + "!");
-        } else {
+        if (currentUser == null) {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
+            return;
         }
 
-        // Implementación para iniciar una nueva carrera
-        startRaceButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Iniciar la actividad para rastrear la carrera
-                startActivity(new Intent(MainActivity.this, RaceTrackingActivity.class));
-            }
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(navListener);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Abrir HomeFragment por defecto si no hay ningún fragmento actual
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new HomeFragment())
+                    .commit();
+        }
+
+        profileButton.setOnClickListener(v -> {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new ProfileFragment())
+                    .commit();
         });
     }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener navListener =
+            new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    Fragment selectedFragment = null;
+
+                    // Manejar las selecciones de menú con if-else
+                    int itemId = item.getItemId();
+                    if (itemId == R.id.nav_home) {
+                        selectedFragment = new HomeFragment();
+                    } else if (itemId == R.id.nav_friends) {
+                        selectedFragment = new FriendsFragment();
+                    } else if (itemId == R.id.nav_progress) {
+                        selectedFragment = new ProgressFragment();
+                    } else if (itemId == R.id.nav_statistics) {
+                        selectedFragment = new StatisticsFragment();
+                    } else if (itemId == R.id.nav_leaderboard) {
+                        selectedFragment = new LeaderboardFragment();
+                    }
+
+                    // Reemplazar el fragmento seleccionado
+                    if (selectedFragment != null) {
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, selectedFragment)
+                                .commit();
+                        return true;
+                    }
+
+                    return false;
+                }
+            };
 
     @Override
     protected void onStart() {

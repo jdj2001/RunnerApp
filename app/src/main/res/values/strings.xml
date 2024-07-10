@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">RunnerApp</string>
+    <string name="welcome_message">Welcome, %1$s!</string>
+    <string name="distance_text">Distance: %1$.2f meters</string>
+    <string name="distance_text_placeholder">Distance: %1$.2f meters</string>
+    <string-array name="countries_array">
+        <item>Costa Rica</item>
+        <item>Canada</item>
+        <item>Argentina</item>
+        <item>Honduras</item>
+        <!-- Agrega más países según necesites -->
+    </string-array>
+
 </resources>

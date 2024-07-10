@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -45,11 +47,20 @@ public class RaceTrackingActivity extends FragmentActivity implements OnMapReady
 
     private Button startButton;
     private Button endButton;
+    private Button pauseButton;
+    private Button resumeButton;
+    private Chronometer chronometer;
+    private long pauseOffset;
+    private boolean running;
 
     private String userId; // Identificador del usuario actual
 
     private boolean raceStarted = false; // Variable para controlar si la carrera ha comenzado
     private boolean raceFinished = false; // Variable para controlar si la carrera ha finalizado
+
+    private LocationCallback locationCallback;
+    private Location lastLocation;
+    private float totalDistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +83,9 @@ public class RaceTrackingActivity extends FragmentActivity implements OnMapReady
 
         startButton = findViewById(R.id.startButton);
         endButton = findViewById(R.id.endButton);
+        pauseButton = findViewById(R.id.pauseButton);
+        resumeButton = findViewById(R.id.resumeButton);
+        chronometer = findViewById(R.id.chronometer);
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,10 +131,25 @@ public class RaceTrackingActivity extends FragmentActivity implements OnMapReady
             }
         });
 
+        pauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pauseChronometer();
+            }
+        });
+
+        resumeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resumeChronometer();
+            }
+        });
 
         // Inicializar botones y sus comportamientos
         startButton.setEnabled(false);
         endButton.setEnabled(false);
+        pauseButton.setEnabled(false);
+        resumeButton.setEnabled(false);
     }
 
     @Override
@@ -206,19 +235,18 @@ public class RaceTrackingActivity extends FragmentActivity implements OnMapReady
         endMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("Fin de Carrera"));
         endLatLng = latLng;
         endButton.setEnabled(true);
-        showStartRaceDialog();
+        showStartRaceDialog(); // Mostrar diálogo para iniciar la carrera
     }
 
     // Método para mostrar el diálogo de inicio de carrera
     private void showStartRaceDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Iniciar Carrera");
-        builder.setMessage("¿Estás seguro de que quieres iniciar la carrera?");
+        builder.setMessage("¿Deseas iniciar la carrera ahora?");
         builder.setPositiveButton("Iniciar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 startRace(); // Método para iniciar la carrera
-                dialog.dismiss();
             }
         });
         builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -233,55 +261,110 @@ public class RaceTrackingActivity extends FragmentActivity implements OnMapReady
 
     // Método para iniciar la carrera
     private void startRace() {
-        // Implementar lógica para iniciar la carrera, por ejemplo:
-        raceStarted = true; // Marcar la carrera como iniciada
-        // Mostrar botones para finalizar carrera
-        endButton.setVisibility(View.VISIBLE);
-        endButton.setOnClickListener(new View.OnClickListener() {
+        if (startLatLng != null) {
+            raceStarted = true; // Cambiar estado a carrera iniciada
+            chronometer.setBase(SystemClock.elapsedRealtime());
+            chronometer.start();
+            running = true;
+            startButton.setEnabled(false);
+            endButton.setEnabled(true);
+            pauseButton.setEnabled(true);
+            resumeButton.setEnabled(false);
+
+            // Solicitar actualizaciones de ubicación periódicas
+            LocationRequest locationRequest = LocationRequest.create();
+            locationRequest.setInterval(5000);
+            locationRequest.setFastestInterval(3000);
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+            locationCallback = new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    if (locationResult == null) {
+                        return;
+                    }
+                    for (Location location : locationResult.getLocations()) {
+                        if (lastLocation != null) {
+                            totalDistance += lastLocation.distanceTo(location);
+                        }
+                        lastLocation = location;
+                    }
+                }
+            };
+
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        }
+    }
+
+    // Método para pausar el cronómetro
+    private void pauseChronometer() {
+        if (running) {
+            chronometer.stop();
+            pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
+            running = false;
+            pauseButton.setEnabled(false);
+            resumeButton.setEnabled(true);
+        }
+    }
+
+    // Método para reanudar el cronómetro
+    private void resumeChronometer() {
+        if (!running) {
+            chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
+            chronometer.start();
+            running = true;
+            pauseButton.setEnabled(true);
+            resumeButton.setEnabled(false);
+        }
+    }
+
+    // Método para finalizar la carrera
+    private void endRace() {
+        if (raceStarted && !raceFinished) {
+            raceFinished = true; // Cambiar estado a carrera finalizada
+            chronometer.stop();
+            long elapsedMillis = SystemClock.elapsedRealtime() - chronometer.getBase();
+            fusedLocationClient.removeLocationUpdates(locationCallback);
+
+            // Guardar datos de la carrera en Firebase
+            saveRaceData(elapsedMillis, totalDistance);
+
+            // Mostrar resumen de la carrera
+            showRaceSummaryDialog(elapsedMillis, totalDistance);
+
+            startButton.setEnabled(true);
+            endButton.setEnabled(false);
+            pauseButton.setEnabled(false);
+            resumeButton.setEnabled(false);
+        }
+    }
+
+    // Método para guardar datos de la carrera en Firebase
+    private void saveRaceData(long elapsedMillis, float distance) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("races").child(userId);
+        String raceId = databaseReference.push().getKey();
+        Race race = new Race(raceId, distance, elapsedMillis);
+        if (raceId != null) {
+            databaseReference.child(raceId).setValue(race);
+        }
+    }
+
+    // Método para mostrar resumen de la carrera
+    private void showRaceSummaryDialog(long elapsedMillis, float distance) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Resumen de Carrera");
+        builder.setMessage("Distancia: " + distance + " metros\nTiempo: " + (elapsedMillis / 1000) + " segundos");
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                finishRace(); // Método para finalizar la carrera
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                // Regresar a la actividad principal
+                startActivity(new Intent(RaceTrackingActivity.this, MainActivity.class));
+                finish();
             }
         });
-    }
-
-    // Método para finalizar la carrera y guardarla
-    private void finishRace() {
-        // Implementar lógica para finalizar y guardar la carrera
-        raceStarted = false;
-        raceFinished = true;
-
-        // Guardar la actividad de la carrera
-        saveRaceActivity();
-
-        // Navegar a la pantalla de progreso (Actividades del Día)
-        Intent intent = new Intent(this, ProgressActivity.class);
-        startActivity(intent);
-        finish(); // Finalizar la actividad actual si es necesario
-    }
-
-    // Método para guardar la actividad de carrera en Firebase
-    private void saveRaceActivity() {
-        if (startLatLng != null && endLatLng != null) {
-            RaceActivity raceActivity = new RaceActivity(startLatLng, endLatLng);
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
-                    .child("race_activities").child(userId);
-            ref.push().setValue(raceActivity)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(RaceTrackingActivity.this, "Carrera guardada exitosamente", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(RaceTrackingActivity.this, "Error al guardar la carrera: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        } else {
-            Toast.makeText(this, "Error: Debes seleccionar el inicio y el fin de la carrera", Toast.LENGTH_SHORT).show();
-        }
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     @Override
@@ -293,6 +376,8 @@ public class RaceTrackingActivity extends FragmentActivity implements OnMapReady
                     mMap.setMyLocationEnabled(true);
                     getLastKnownLocation();
                 }
+            } else {
+                Toast.makeText(this, "Permiso de ubicación denegado", Toast.LENGTH_SHORT).show();
             }
         }
     }
