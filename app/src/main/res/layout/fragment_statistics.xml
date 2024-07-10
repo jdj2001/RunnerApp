@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/kmsMonthTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Km recorridos este mes: 0"
+        android:textSize="16sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp"/>
+
+    <TextView
+        android:id="@+id/caloriesBurnedTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Calorías quemadas: 0"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/kmsMonthTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp"/>
+
+    <TextView
+        android:id="@+id/weekComparisonTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Comparativo de km (Semana): 0 vs 0"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/caloriesBurnedTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp"/>
+
+    <TextView
+        android:id="@+id/monthComparisonTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Comparativo de km (Mes): 0 vs 0"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/weekComparisonTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
