@@ -2,7 +2,32 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/totalKmsTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Km recorridos hasta el momento: 0"
+        android:textSize="16sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="8dp"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/totalCaloriesTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Calorías quemadas hasta el momento: 0"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/totalKmsTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="8dp"
+        android:layout_marginBottom="8dp" />
 
     <TextView
         android:id="@+id/kmsMonthTextView"
@@ -10,21 +35,23 @@
         android:layout_height="wrap_content"
         android:text="Km recorridos este mes: 0"
         android:textSize="16sp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/totalCaloriesTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:padding="16dp"/>
+        android:padding="8dp"
+        android:layout_marginBottom="8dp" />
 
     <TextView
-        android:id="@+id/caloriesBurnedTextView"
+        android:id="@+id/caloriesMonthTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Calorías quemadas: 0"
+        android:text="Calorías quemadas este mes: 0"
         android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@id/kmsMonthTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:padding="16dp"/>
+        android:padding="8dp"
+        android:layout_marginBottom="8dp" />
 
     <TextView
         android:id="@+id/weekComparisonTextView"
@@ -32,10 +59,11 @@
         android:layout_height="wrap_content"
         android:text="Comparativo de km (Semana): 0 vs 0"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/caloriesBurnedTextView"
+        app:layout_constraintTop_toBottomOf="@id/caloriesMonthTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:padding="16dp"/>
+        android:padding="8dp"
+        android:layout_marginBottom="8dp" />
 
     <TextView
         android:id="@+id/monthComparisonTextView"
@@ -46,6 +74,7 @@
         app:layout_constraintTop_toBottomOf="@id/weekComparisonTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:padding="16dp"/>
+        android:padding="8dp"
+        android:layout_marginBottom="8dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

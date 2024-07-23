@@ -17,6 +17,8 @@ import com.example.runnerapp.Pestañas.LeaderboardFragment;
 import com.example.runnerapp.Pestañas.ProfileFragment;
 import com.example.runnerapp.Pestañas.ProgressFragment;
 import com.example.runnerapp.Pestañas.StatisticsFragment;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -29,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         mAuth = FirebaseAuth.getInstance();
         profileButton = findViewById(R.id.profile_button);
@@ -46,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Abrir HomeFragment por defecto si no hay ningún fragmento actual
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, new HomeFragment())

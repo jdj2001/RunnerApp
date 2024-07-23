@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature
@@ -25,7 +27,6 @@
             <action android:name="android.media.action.IMAGE_CAPTURE" />
         </intent>
 
-        <!-- galeria -->
         <intent>
             <action android:name="android.intent.action.GET_CONTENT" />
         </intent>
@@ -42,6 +43,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RunnerApp"
         tools:targetApi="31">
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -52,10 +59,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAPbddaN9SLqpNrUFgwIJQyYXSPc48DkMs" />
 
         <activity android:name=".Auth.LoginActivity"
             android:exported="true">
@@ -106,7 +109,7 @@
         </activity>
 
         <activity
-            android:name=".Activity"
+            android:name=".Models.Activity"
             android:exported="true">
         </activity>
 

@@ -1,9 +1,11 @@
 package com.example.runnerapp.Pestañas;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,8 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.runnerapp.Activity;
 import com.example.runnerapp.R;
+import com.example.runnerapp.Models.Activity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -22,13 +24,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ProgressFragment extends Fragment {
 
     private RecyclerView progressRecyclerView;
     private ProgressAdapter progressAdapter;
-    private List<Activity> activityList;
+    private List<Activity> activities;
     private DatabaseReference activitiesRef;
     private FirebaseAuth mAuth;
 
@@ -40,42 +44,43 @@ public class ProgressFragment extends Fragment {
         progressRecyclerView = view.findViewById(R.id.progressRecyclerView);
         progressRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Inicializar la lista de actividades
-        activityList = new ArrayList<>();
+        activities = new ArrayList<>();
+        progressAdapter = new ProgressAdapter(activities);
+        progressRecyclerView.setAdapter(progressAdapter);
 
-        // Inicializar Firebase Auth y referencia a Firebase
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             activitiesRef = FirebaseDatabase.getInstance().getReference("activities").child(currentUser.getUid());
             loadActivities();
+        } else {
+            Toast.makeText(getContext(), "Usuario no autenticado", Toast.LENGTH_SHORT).show();
         }
-
-        progressAdapter = new ProgressAdapter(activityList);
-        progressRecyclerView.setAdapter(progressAdapter);
 
         return view;
     }
 
     private void loadActivities() {
-        // Consultar actividades de la base de datos
         activitiesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                activityList.clear();
+                activities.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Activity activity = snapshot.getValue(Activity.class);
                     if (activity != null) {
-                        activityList.add(activity);
+                        activities.add(activity);
                     }
                 }
+                // Notificar al adaptador sobre los datos actualizados
                 progressAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Manejar error de consulta
+                Toast.makeText(getContext(), "Error al cargar actividades", Toast.LENGTH_SHORT).show();
             }
         });
     }
 }
+
+
