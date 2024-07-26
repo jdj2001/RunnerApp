@@ -1,0 +1,6 @@
+<resources>
+    <style name="CustomSpinner" parent="Widget.AppCompat.Spinner.Underlined">
+        <item name="android:background">@drawable/edit_text_style</item>
+        <item name="android:padding">8dp</item>
+    </style>
+</resources>
