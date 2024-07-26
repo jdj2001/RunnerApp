@@ -45,7 +45,6 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.Progre
                 activity.getCaloriesBurned()));
 
         holder.itemView.setOnClickListener(v -> {
-            // Mostrar un diálogo con los detalles de la actividad seleccionada
             showActivityDetailDialog(holder.itemView.getContext(), activity);
         });
     }

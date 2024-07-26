@@ -7,9 +7,9 @@ public class User {
     private String lastName;
     private String country;
     private String profileImageUrl;
-    private double distanceTraveled; // Nuevo campo para la distancia recorrida
+    private double distanceTraveled;
 
-    // Constructor sin argumentos (necesario para Firebase)
+    //para firebase
     public User() {
     }
 
@@ -72,7 +72,6 @@ public class User {
         this.profileImageUrl = profileImageUrl;
     }
 
-    // Getter y setter para la distancia recorrida
     public double getDistanceTraveled() {
         return distanceTraveled;
     }

@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Auth.EditProfileActivity">
+    tools:context=".Auth.EditProfileActivity"
+    android:background="#000000">
 
     <ImageView
         android:id="@+id/edit_profile_image"
@@ -21,7 +21,9 @@
         android:layout_below="@id/edit_profile_image"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
-        android:text="Select Photo" />
+        android:text="Select Photo"
+        android:background="@drawable/button_style"
+        android:textColor="#000000"/>
 
     <Button
         android:id="@+id/capture_photo_button"
@@ -30,7 +32,9 @@
         android:layout_below="@id/select_photo_button"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
-        android:text="Capture Photo" />
+        android:text="Capture Photo"
+        android:background="@drawable/button_style"
+        android:textColor="#000000"/>
 
     <EditText
         android:id="@+id/edit_email"
@@ -41,9 +45,11 @@
         android:layout_marginTop="24dp"
         android:hint="Email"
         android:inputType="textEmailAddress"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:enabled="false" />
+        android:textColorHint="#000000"
+        android:textColor="#000000"
+        android:padding="12dp"
+        android:minHeight="48dp"
+        android:background="@drawable/edit_text_style"/>
 
     <EditText
         android:id="@+id/edit_first_name"
@@ -54,8 +60,11 @@
         android:layout_marginTop="16dp"
         android:hint="First Name"
         android:inputType="textPersonName"
-        android:maxLines="1"
-        android:singleLine="true" />
+        android:textColorHint="#000000"
+        android:textColor="#000000"
+        android:padding="12dp"
+        android:minHeight="48dp"
+        android:background="@drawable/edit_text_style"/>
 
     <EditText
         android:id="@+id/edit_last_name"
@@ -66,8 +75,11 @@
         android:layout_marginTop="16dp"
         android:hint="Last Name"
         android:inputType="textPersonName"
-        android:maxLines="1"
-        android:singleLine="true" />
+        android:textColorHint="#000000"
+        android:textColor="#000000"
+        android:padding="12dp"
+        android:minHeight="48dp"
+        android:background="@drawable/edit_text_style"/>
 
     <EditText
         android:id="@+id/edit_new_password"
@@ -78,8 +90,11 @@
         android:layout_marginTop="16dp"
         android:hint="New Password"
         android:inputType="textPassword"
-        android:maxLines="1"
-        android:singleLine="true" />
+        android:textColorHint="#000000"
+        android:textColor="#000000"
+        android:padding="12dp"
+        android:minHeight="48dp"
+        android:background="@drawable/edit_text_style"/>
 
     <EditText
         android:id="@+id/edit_current_password"
@@ -90,8 +105,11 @@
         android:layout_marginTop="16dp"
         android:hint="Current Password"
         android:inputType="textPassword"
-        android:maxLines="1"
-        android:singleLine="true" />
+        android:textColorHint="#000000"
+        android:textColor="#000000"
+        android:padding="12dp"
+        android:minHeight="48dp"
+        android:background="@drawable/edit_text_style"/>
 
     <Spinner
         android:id="@+id/edit_country_spinner"
@@ -99,7 +117,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/edit_current_password"
         android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:background="@drawable/edit_text_style"/>
 
     <Button
         android:id="@+id/update_button"
@@ -108,7 +127,9 @@
         android:layout_below="@id/edit_country_spinner"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
-        android:text="Update Profile" />
+        android:text="Update Profile"
+        android:background="@drawable/button_style"
+        android:textColor="#000000"/>
 
     <Button
         android:id="@+id/cancel_button"
@@ -117,7 +138,9 @@
         android:layout_below="@id/update_button"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
-        android:text="Cancel" />
+        android:text="Cancel"
+        android:background="@drawable/button_style"
+        android:textColor="#000000"/>
 
     <ProgressBar
         android:id="@+id/progress_bar"

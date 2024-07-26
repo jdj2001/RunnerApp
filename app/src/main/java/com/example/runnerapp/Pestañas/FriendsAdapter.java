@@ -5,22 +5,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.example.runnerapp.Models.User;
 import com.example.runnerapp.R;
-
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import java.util.List;
 
 public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendViewHolder> {
 
     private List<User> friendsList;
+    private OnItemClickListener listener;
 
-    public FriendsAdapter(List<User> friendsList) {
+    public interface OnItemClickListener {
+        void onItemClick(User user);
+    }
+
+    public FriendsAdapter(List<User> friendsList, OnItemClickListener listener) {
         this.friendsList = friendsList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -35,11 +40,12 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
         User friend = friendsList.get(position);
         holder.nameTextView.setText(friend.getFirstName() + " " + friend.getLastName());
         holder.countryTextView.setText(friend.getCountry());
-        // Cargar la imagen de perfil usando Glide
         Glide.with(holder.itemView.getContext())
                 .load(friend.getProfileImageUrl())
                 .placeholder(R.drawable.ic_profile)
                 .into(holder.profileImageView);
+
+        holder.itemView.setOnClickListener(v -> listener.onItemClick(friend));
     }
 
     @Override

@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.runnerapp.Auth.LoginActivity;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -140,3 +142,4 @@ public class ProfileFragment extends Fragment {
         }
     }
 }
+

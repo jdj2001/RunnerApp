@@ -4,13 +4,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.runnerapp.Models.User;
 import com.example.runnerapp.R;
-
+import com.example.runnerapp.Models.User;
 import java.util.List;
 
 public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.ViewHolder> {
@@ -55,8 +52,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         public void bind(User user, int position) {
             positionTextView.setText(String.valueOf(position));
             usernameTextView.setText(user.getFirstName() + " " + user.getLastName());
-            // Set distance or other metric
-            distanceTextView.setText(String.valueOf(user.getDistanceTraveled())); // Replace with actual metric
+            distanceTextView.setText(String.valueOf(user.getDistanceTraveled()) + " km"); // Set distance traveled
         }
     }
 }

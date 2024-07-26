@@ -2,14 +2,17 @@ package com.example.runnerapp.Auth;
 
 import android.Manifest;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -32,9 +35,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import Configuracion.FirebaseConfig;
 
@@ -46,6 +54,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText emailEditText, passwordEditText, firstNameEditText, lastNameEditText;
     private Spinner countrySpinner;
     private Button registerButton, selectPhotoButton, capturePhotoButton;
+    private ImageView profileImageView;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
     private Uri selectedImageUri;
@@ -65,6 +74,7 @@ public class RegisterActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.registerButton);
         selectPhotoButton = findViewById(R.id.selectPhotoButton);
         capturePhotoButton = findViewById(R.id.capturePhotoButton);
+        profileImageView = findViewById(R.id.profileImageView);
         progressBar = findViewById(R.id.progressBar);
 
         // Obtener la lista de países desde strings.xml
@@ -166,104 +176,119 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void saveUserData(String userId, String email, String firstName, String lastName, String country, String profileImageUrl) {
-        // Save user data to Firebase Database
-        DatabaseReference databaseReference = FirebaseConfig.getFirebaseDatabase().getReference("users").child(userId);
-        User user = new User(userId, email, firstName, lastName, country, profileImageUrl);
-        databaseReference.setValue(user);
-    }
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference usersRef = database.getReference("users");
 
-    private void uploadImageToFirebase(String userId, OnImageUploadListener listener) {
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("profile_images").child(userId + ".jpg");
-        storageReference.putFile(selectedImageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                if (task.isSuccessful()) {
-                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            String profileImageUrl = uri.toString();
-                            listener.onImageUploaded(profileImageUrl);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            listener.onImageUploadFailed();
-                        }
-                    });
-                } else {
-                    listener.onImageUploadFailed();
-                }
-            }
-        });
-    }
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("email", email);
+        userData.put("firstName", firstName);
+        userData.put("lastName", lastName);
+        userData.put("country", country);
+        if (profileImageUrl != null) {
+            userData.put("profileImageUrl", profileImageUrl);
+        }
 
-    private interface OnImageUploadListener {
-        void onImageUploaded(String profileImageUrl);
-        void onImageUploadFailed();
-    }
-
-
-    private void sendVerificationEmail(FirebaseUser user) {
-        user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener() {
-            @Override
-            public void onComplete(@NonNull Task task) {
-                if (task.isSuccessful()) {
-                    Toast.makeText(RegisterActivity.this, "Registered successfully. Please check your email for verification.", Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                    finish();
-                } else {
-                    Toast.makeText(RegisterActivity.this, "Failed to send verification email.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        usersRef.child(userId).setValue(userData);
     }
 
     private void openFileChooser() {
-        Intent intent = new Intent();
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
 
     private void checkCameraPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
         } else {
-            dispatchTakePictureIntent();
+            openCamera();
         }
     }
 
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            ContentValues values = new ContentValues();
-            values.put(MediaStore.Images.Media.TITLE, "New Picture");
-            values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-            selectedImageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, selectedImageUri);
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+    private void openCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             selectedImageUri = data.getData();
+            profileImageView.setVisibility(View.VISIBLE);
+            profileImageView.setImageURI(selectedImageUri);
         } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            // La imagen ya está almacenada en selectedImageUri
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            profileImageView.setVisibility(View.VISIBLE);
+            profileImageView.setImageBitmap(imageBitmap);
+            selectedImageUri = getImageUri(this, imageBitmap);
         }
+    }
+
+    private Uri getImageUri(Context context, Bitmap image) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), image, "ProfileImage", null);
+        return Uri.parse(path);
+    }
+
+    private void uploadImageToFirebase(String userId, OnImageUploadListener listener) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference("profile_images/" + userId + ".jpg");
+        storageRef.putFile(selectedImageUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                listener.onImageUploaded(uri.toString());
+                            }
+                        });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        listener.onImageUploadFailed();
+                    }
+                });
+    }
+
+    interface OnImageUploadListener {
+        void onImageUploaded(String profileImageUrl);
+        void onImageUploadFailed();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         if (requestCode == PERMISSION_CAMERA) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                dispatchTakePictureIntent();
+                openCamera();
             } else {
-                Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Camera permission is required to use camera.", Toast.LENGTH_SHORT).show();
             }
         }
     }
+
+    private void sendVerificationEmail(FirebaseUser user) {
+        user.sendEmailVerification()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(RegisterActivity.this, "Registration successful. Verification email sent.", Toast.LENGTH_SHORT).show();
+                            finish();
+                        } else {
+                            Toast.makeText(RegisterActivity.this, "Failed to send verification email.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
 }
+

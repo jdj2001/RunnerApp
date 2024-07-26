@@ -5,14 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.runnerapp.Models.User;
 import com.example.runnerapp.R;
+import com.example.runnerapp.Models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -20,7 +18,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -63,40 +60,81 @@ public class LeaderboardFragment extends Fragment {
     }
 
     private void loadLeaderboardUsers() {
-        usersRef.orderByChild("country").equalTo(getUserCountry()).addListenerForSingleValueEvent(new ValueEventListener() {
+        getUserCountry(new UserCountryCallback() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                leaderboardUsers.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    User user = snapshot.getValue(User.class);
-                    if (user != null) {
-                        leaderboardUsers.add(user);
-                    }
-                }
-
-                // Sort leaderboardUsers based on some metric (e.g., distance traveled)
-                Collections.sort(leaderboardUsers, new Comparator<User>() {
+            public void onCallback(String country) {
+                usersRef.orderByChild("country").equalTo(country).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public int compare(User u1, User u2) {
-                        // Here you can implement comparison logic based on distance or any other metric
-                        // For example:
-                        // return Double.compare(u2.getDistanceTraveled(), u1.getDistanceTraveled());
-                        return 0; // Replace with actual comparison logic
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        leaderboardUsers.clear();
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            User user = snapshot.getValue(User.class);
+                            if (user != null) {
+                                leaderboardUsers.add(user);
+                            }
+                        }
+
+                        // Sort leaderboardUsers based on distance traveled in descending order
+                        Collections.sort(leaderboardUsers, new Comparator<User>() {
+                            @Override
+                            public int compare(User u1, User u2) {
+                                return Double.compare(u2.getDistanceTraveled(), u1.getDistanceTraveled());
+                            }
+                        });
+
+                        leaderboardAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        // Handle possible errors.
                     }
                 });
-
-                leaderboardAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle possible errors.
             }
         });
     }
 
-    private String getUserCountry() {
-        // Replace with actual logic to get the current user's country
-        return "YourUserCountry"; // For testing purposes
+
+    public interface UserCountryCallback {
+        void onCallback(String country);
     }
+
+
+    private void getUserCountry(final UserCountryCallback callback) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        User user = dataSnapshot.getValue(User.class);
+                        if (user != null && user.getCountry() != null) {
+                            callback.onCallback(user.getCountry());
+                        } else {
+                            // Handle case where user or country is null
+                            callback.onCallback("Unknown");
+                        }
+                    } else {
+                        // Handle case where user snapshot doesn't exist
+                        callback.onCallback("Unknown");
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // Handle possible errors
+                    callback.onCallback("Unknown");
+                }
+            });
+        } else {
+            // Handle case where currentUser is null
+            callback.onCallback("Unknown");
+        }
+    }
+
+
 }
+

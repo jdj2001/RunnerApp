@@ -4,16 +4,18 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="#000000">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
+        android:background="#AFC170"
         android:theme="?attr/actionBarTheme"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:title="RunnerApp">
+        app:title="RunnerApp"
+        android:titleTextColor="#FFFFFF">
 
         <ImageButton
             android:id="@+id/profile_button"
@@ -37,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="#87CEFA"
+        android:background="#AFC170"
         app:menu="@menu/bottom_navigation_menu"/>
 
 </RelativeLayout>

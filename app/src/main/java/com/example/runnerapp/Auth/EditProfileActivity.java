@@ -96,7 +96,6 @@ public class EditProfileActivity extends AppCompatActivity {
         usersRef = FirebaseDatabase.getInstance().getReference().child("users");
         storageReference = FirebaseStorage.getInstance().getReference().child("profile_images");
 
-        // Cargar datos del usuario y configurar la vista
         loadUserProfile();
 
         selectPhotoButton.setOnClickListener(new View.OnClickListener() {
@@ -127,16 +126,13 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         });
 
-        // Configurar el Spinner de País con el adaptador personalizado
         String[] countries = getResources().getStringArray(R.array.countries_array);
         CountrySpinnerAdapter adapter = new CountrySpinnerAdapter(this, R.layout.spinner_item_country, countries);
         editCountrySpinner.setAdapter(adapter);
         editCountrySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // Obtener el país seleccionado
                 String selectedCountry = parent.getItemAtPosition(position).toString();
-                // Aquí puedes realizar acciones adicionales con el país seleccionado si es necesario
             }
 
             @Override
@@ -151,7 +147,6 @@ public class EditProfileActivity extends AppCompatActivity {
             currentUserId = user.getUid();
             editEmail.setText(user.getEmail());
 
-            // Obtener datos del usuario desde Realtime Database
             usersRef.child(currentUserId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -164,17 +159,14 @@ public class EditProfileActivity extends AppCompatActivity {
                         editFirstName.setText(firstName);
                         editLastName.setText(lastName);
 
-                        // Cargar imagen actual del perfil si existe
                         if (currentProfileImageUrl != null && !currentProfileImageUrl.isEmpty()) {
                             Glide.with(EditProfileActivity.this)
                                     .load(currentProfileImageUrl)
                                     .into(editProfileImage);
                         } else {
-                            // Mostrar imagen por defecto del sistema si no hay imagen actual
                             editProfileImage.setImageResource(R.drawable.ic_profile);
                         }
 
-                        // Seleccionar el país en el Spinner si está almacenado
                         if (country != null) {
                             int spinnerPosition = ((CountrySpinnerAdapter) editCountrySpinner.getAdapter())
                                     .getPosition(country);
@@ -202,12 +194,10 @@ public class EditProfileActivity extends AppCompatActivity {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            // Actualizar nombre de usuario y foto de perfil en Firebase Authentication
             UserProfileChangeRequest.Builder profileUpdatesBuilder = new UserProfileChangeRequest.Builder()
                     .setDisplayName(firstName + " " + lastName);
 
             if (selectedImageUri != null) {
-                // Subir imagen a Firebase Storage y obtener la URL de descarga
                 uploadImageToFirebaseStorage(selectedImageUri);
             }
 
@@ -225,7 +215,6 @@ public class EditProfileActivity extends AppCompatActivity {
                         }
                     });
 
-            // Actualizar otros campos en Realtime Database
             Map<String, Object> updates = new HashMap<>();
             updates.put("firstName", firstName);
             updates.put("lastName", lastName);

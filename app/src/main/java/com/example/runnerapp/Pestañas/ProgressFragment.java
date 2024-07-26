@@ -1,5 +1,6 @@
 package com.example.runnerapp.Pestañas;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -54,7 +55,10 @@ public class ProgressFragment extends Fragment {
             activitiesRef = FirebaseDatabase.getInstance().getReference("activities").child(currentUser.getUid());
             loadActivities();
         } else {
-            Toast.makeText(getContext(), "Usuario no autenticado", Toast.LENGTH_SHORT).show();
+            Context context = getContext();
+            if (context != null) {
+                Toast.makeText(context, "Usuario no autenticado", Toast.LENGTH_SHORT).show();
+            }
         }
 
         return view;
@@ -71,16 +75,19 @@ public class ProgressFragment extends Fragment {
                         activities.add(activity);
                     }
                 }
-                // Notificar al adaptador sobre los datos actualizados
                 progressAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), "Error al cargar actividades", Toast.LENGTH_SHORT).show();
+                Context context = getContext();
+                if (context != null) {
+                    Toast.makeText(context, "Error al cargar actividades", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 }
+
 
 
