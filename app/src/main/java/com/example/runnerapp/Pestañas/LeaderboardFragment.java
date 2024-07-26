@@ -52,7 +52,6 @@ public class LeaderboardFragment extends Fragment {
         if (currentUser != null) {
             usersRef = FirebaseDatabase.getInstance().getReference("users");
 
-            // Load leaderboard users
             loadLeaderboardUsers();
         }
 
@@ -74,7 +73,6 @@ public class LeaderboardFragment extends Fragment {
                             }
                         }
 
-                        // Sort leaderboardUsers based on distance traveled in descending order
                         Collections.sort(leaderboardUsers, new Comparator<User>() {
                             @Override
                             public int compare(User u1, User u2) {
@@ -87,7 +85,7 @@ public class LeaderboardFragment extends Fragment {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        // Handle possible errors.
+
                     }
                 });
             }
@@ -114,11 +112,9 @@ public class LeaderboardFragment extends Fragment {
                         if (user != null && user.getCountry() != null) {
                             callback.onCallback(user.getCountry());
                         } else {
-                            // Handle case where user or country is null
                             callback.onCallback("Unknown");
                         }
                     } else {
-                        // Handle case where user snapshot doesn't exist
                         callback.onCallback("Unknown");
                     }
                 }
@@ -130,7 +126,6 @@ public class LeaderboardFragment extends Fragment {
                 }
             });
         } else {
-            // Handle case where currentUser is null
             callback.onCallback("Unknown");
         }
     }

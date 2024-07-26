@@ -38,12 +38,10 @@ public class LoginActivity extends AppCompatActivity {
 
         auth = FirebaseConfig.getFirebaseAuth();
 
-        // Verificar si hay un usuario autenticado
         if (auth.getCurrentUser() != null && auth.getCurrentUser().isEmailVerified()) {
-            // Usuario autenticado, redirigir a MainActivity
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();
-            return; // Salir de onCreate para evitar la configuración adicional de la vista de inicio de sesión
+            return;
         }
 
         emailEditText = findViewById(R.id.email);
@@ -66,7 +64,6 @@ public class LoginActivity extends AppCompatActivity {
                 openPasswordResetDialog();
             }
         });
-        // Apply underline to "Forgot password" text
         SpannableString content = new SpannableString(forgotPasswordButton.getText());
         content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
         forgotPasswordButton.setText(content);
@@ -85,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
         String password = passwordEditText.getText().toString().trim();
 
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Debe llenar todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -102,10 +99,10 @@ public class LoginActivity extends AppCompatActivity {
                                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                 finish();
                             } else {
-                                Toast.makeText(LoginActivity.this, "Please verify your email address", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this, "Por favor verifique su dirección de correo electrónico", Toast.LENGTH_SHORT).show();
                             }
                         } else {
-                            Toast.makeText(LoginActivity.this, "Authentication failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "Autenticación fallida", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -113,25 +110,25 @@ public class LoginActivity extends AppCompatActivity {
 
     private void openPasswordResetDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Reset Password");
+        builder.setTitle("Resetear Contraseña");
 
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         builder.setView(input);
 
-        builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Enviar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String email = input.getText().toString().trim();
                 if (!email.isEmpty()) {
                     sendPasswordResetEmail(email);
                 } else {
-                    Toast.makeText(LoginActivity.this, "Please enter your email", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Por favor ingrese su correo", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
@@ -141,7 +138,6 @@ public class LoginActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
 
-        // Asegurar que el foco esté en el EditText al mostrar el diálogo
         input.requestFocus();
     }
 
@@ -151,9 +147,9 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "Password reset email sent.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "Correo de restablecimiento de contraseña enviado", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(LoginActivity.this, "Failed to send password reset email.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "No se ha podido enviar el correo de restablecimiento de contraseña", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

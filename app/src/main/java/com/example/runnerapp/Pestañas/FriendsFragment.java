@@ -75,7 +75,7 @@ public class FriendsFragment extends Fragment {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // Manejar error
+
                 }
             });
         }
@@ -120,7 +120,7 @@ public class FriendsFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Manejar error de consulta
+
             }
         });
     }
@@ -153,7 +153,6 @@ public class FriendsFragment extends Fragment {
     }
 
     private void addFriend(User user) {
-        // Lógica para agregar amigo
         DatabaseReference currentUserFriendsRef = usersRef.child(currentUserId).child("friends");
         DatabaseReference friendUserFriendsRef = usersRef.child(user.getUserId()).child("friends");
 
@@ -175,7 +174,6 @@ public class FriendsFragment extends Fragment {
     }
 
     private void viewProfile(User user) {
-        // Lógica para ver perfil
         Intent intent = new Intent(requireContext(), PerfilActivity.class);
         intent.putExtra("userId", user.getUserId());
         startActivity(intent);

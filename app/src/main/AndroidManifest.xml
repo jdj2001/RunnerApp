@@ -103,10 +103,7 @@
             android:exported="true">
         </activity>
 
-        <activity
-            android:name=".ProgressActivity"
-            android:exported="true">
-        </activity>
+
 
         <activity
             android:name=".Models.Activity"

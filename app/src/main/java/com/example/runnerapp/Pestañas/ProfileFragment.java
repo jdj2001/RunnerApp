@@ -47,13 +47,11 @@ public class ProfileFragment extends Fragment {
         editButton = view.findViewById(R.id.editButton);
         logoutButton = view.findViewById(R.id.logoutButton);
 
-        // Load user data and set to views
         loadUserProfile();
 
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Handle edit profile button click
                 Intent intent = new Intent(getActivity(), EditProfileActivity.class);
                 startActivity(intent);
             }
@@ -62,7 +60,6 @@ public class ProfileFragment extends Fragment {
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Handle logout button click
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(getActivity(), LoginActivity.class);
                 startActivity(intent);
@@ -76,7 +73,6 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Actualizar la vista del perfil al reanudar el fragmento
         loadUserProfile();
     }
 
@@ -103,10 +99,9 @@ public class ProfileFragment extends Fragment {
                         if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
                             Glide.with(ProfileFragment.this)
                                     .load(profileImageUrl)
-                                    .apply(new RequestOptions().placeholder(R.drawable.ic_profile)) // Placeholder if image is loading
+                                    .apply(new RequestOptions().placeholder(R.drawable.ic_profile))
                                     .into(profileImageView);
                         } else {
-                            // If there is no profile image URL, set a default image
                             profileImageView.setImageResource(R.drawable.ic_profile);
                         }
 
@@ -121,7 +116,7 @@ public class ProfileFragment extends Fragment {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // Handle possible errors.
+
                 }
             });
         }

@@ -51,9 +51,8 @@ public class CountrySpinnerAdapter extends ArrayAdapter<String> {
                 return R.drawable.flag_argentina;
             case "Honduras":
                 return R.drawable.flag_honduras;
-            // Agrega más casos según necesites
             default:
-                return R.drawable.flag_default; // Bandera por defecto
+                return R.drawable.flag_default;
         }
     }
 }

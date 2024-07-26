@@ -28,7 +28,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         User user = leaderboardUsers.get(position);
-        holder.bind(user, position + 1); // Position + 1 to start from 1 instead of 0
+        holder.bind(user, position + 1);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         public void bind(User user, int position) {
             positionTextView.setText(String.valueOf(position));
             usernameTextView.setText(user.getFirstName() + " " + user.getLastName());
-            distanceTextView.setText(String.valueOf(user.getDistanceTraveled()) + " km"); // Set distance traveled
+            distanceTextView.setText(String.valueOf(user.getDistanceTraveled()) + " km");
         }
     }
 }

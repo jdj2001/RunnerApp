@@ -9,11 +9,9 @@ public class User {
     private String profileImageUrl;
     private double distanceTraveled;
 
-    //para firebase
     public User() {
     }
 
-    // Constructor
     public User(String userId, String email, String firstName, String lastName, String country, String profileImageUrl) {
         this.userId = userId;
         this.email = email;
@@ -23,7 +21,6 @@ public class User {
         this.profileImageUrl = profileImageUrl;
     }
 
-    // Getters y setters
     public String getUserId() {
         return userId;
     }

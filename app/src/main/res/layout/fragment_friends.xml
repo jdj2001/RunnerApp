@@ -11,7 +11,7 @@
         android:id="@+id/searchEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Buscar amigo"
+        android:hint="Buscar"
         android:padding="8dp"
         android:layout_margin="8dp"
         android:background="@color/white"

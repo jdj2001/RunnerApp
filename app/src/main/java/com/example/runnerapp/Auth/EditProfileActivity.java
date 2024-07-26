@@ -209,6 +209,7 @@ public class EditProfileActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 Toast.makeText(EditProfileActivity.this, "Perfil actualizado correctamente", Toast.LENGTH_SHORT).show();
+                                finish();
                             } else {
                                 Toast.makeText(EditProfileActivity.this, "Error al actualizar el perfil", Toast.LENGTH_SHORT).show();
                             }
@@ -233,7 +234,6 @@ public class EditProfileActivity extends AppCompatActivity {
                         }
                     });
 
-            // Actualizar contraseña en Firebase Authentication si se ha proporcionado una nueva
             if (!newPassword.isEmpty() && !currentPassword.isEmpty()) {
                 AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), currentPassword);
                 user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -270,7 +270,7 @@ public class EditProfileActivity extends AppCompatActivity {
                             public void onSuccess(Uri uri) {
                                 String downloadUrl = uri.toString();
                                 usersRef.child(currentUserId).child("profileImageUrl").setValue(downloadUrl);
-                                currentProfileImageUrl = downloadUrl; // Actualizar la URL actual de la imagen de perfil
+                                currentProfileImageUrl = downloadUrl;
                                 Toast.makeText(EditProfileActivity.this, "Imagen subida exitosamente", Toast.LENGTH_SHORT).show();
                             }
                         });

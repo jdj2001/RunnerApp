@@ -17,7 +17,7 @@ public class FirebaseConfig {
     public static FirebaseDatabase getFirebaseDatabase() {
         if (database == null) {
             database = FirebaseDatabase.getInstance();
-            database.setPersistenceEnabled(true); // Enable Firebase Database persistence
+            database.setPersistenceEnabled(true);
         }
         return database;
     }

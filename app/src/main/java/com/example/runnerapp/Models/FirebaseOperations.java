@@ -32,13 +32,13 @@ public class FirebaseOperations {
         databaseReference.setValue(activity);
     }
 
-    /*// Enviar una solicitud de amistad
+    /*
     public static void sendFriendRequest(String senderId, String receiverId) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users")
                 .child(receiverId).child("friendRequests").child(senderId);
         databaseReference.setValue(true);
     }
-    // Aceptar una solicitud de amistad
+
     public static void acceptFriendRequest(String userId, String friendId) {
         DatabaseReference userFriendsRef = FirebaseDatabase.getInstance().getReference("users")
                 .child(userId).child("friends").child(friendId);
@@ -48,18 +48,18 @@ public class FirebaseOperations {
         userFriendsRef.setValue(true);
         friendFriendsRef.setValue(true);
 
-        // Eliminar la solicitud de amistad
+
         DatabaseReference userFriendRequestRef = FirebaseDatabase.getInstance().getReference("users")
                 .child(userId).child("friendRequests").child(friendId);
         userFriendRequestRef.removeValue();
     }*/
-    /*// Enviar una solicitud de amistad
+    /*
     public static void sendFriendRequest(String userId, String friendId) {
         DatabaseReference friendRequestsRef = FirebaseDatabase.getInstance().getReference("users").child(friendId).child("friendRequests").child(userId);
         friendRequestsRef.setValue(true);
     }
 
-    // Aceptar una solicitud de amistad
+
     public static void acceptFriendRequest(String userId, String friendId) {
         DatabaseReference currentUserFriendsRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("friends").child(friendId);
         DatabaseReference friendUserFriendsRef = FirebaseDatabase.getInstance().getReference("users").child(friendId).child("friends").child(userId);
@@ -67,7 +67,7 @@ public class FirebaseOperations {
         currentUserFriendsRef.setValue(true);
         friendUserFriendsRef.setValue(true);
 
-        // Eliminar la solicitud de amistad
+
         DatabaseReference friendRequestsRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("friendRequests").child(friendId);
         friendRequestsRef.removeValue();
     }*/

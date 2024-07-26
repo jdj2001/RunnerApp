@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.example.runnerapp.Auth.LoginActivity;
 import com.example.runnerapp.Pestañas.FriendsFragment;
 import com.example.runnerapp.Pestañas.HomeFragment;
@@ -22,19 +23,21 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private ImageButton profileButton;
+    private FirebaseStorage storage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
         mAuth = FirebaseAuth.getInstance();
+        storage = FirebaseStorage.getInstance();
         profileButton = findViewById(R.id.profile_button);
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -61,6 +64,21 @@ public class MainActivity extends AppCompatActivity {
                     .replace(R.id.fragment_container, new ProfileFragment())
                     .commit();
         });
+
+        loadProfileImage(currentUser.getUid());
+    }
+
+    private void loadProfileImage(String userId) {
+        StorageReference profileImageRef = storage.getReference().child("profile_images/" + userId + ".jpg");
+        profileImageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+            Glide.with(this)
+                    .load(uri)
+                    .placeholder(R.drawable.ic_profile)
+                    .error(R.drawable.ic_profile)
+                    .into(profileButton);
+        }).addOnFailureListener(e -> {
+            profileButton.setImageResource(R.drawable.ic_profile);
+        });
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener navListener =
@@ -69,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                     Fragment selectedFragment = null;
 
-                    // Manejar las selecciones de menú con if-else
                     int itemId = item.getItemId();
                     if (itemId == R.id.nav_home) {
                         selectedFragment = new HomeFragment();
@@ -83,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
                         selectedFragment = new LeaderboardFragment();
                     }
 
-                    // Reemplazar el fragmento seleccionado
                     if (selectedFragment != null) {
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.fragment_container, selectedFragment)

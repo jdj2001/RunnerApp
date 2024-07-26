@@ -23,6 +23,7 @@ public class PerfilActivity extends AppCompatActivity {
 
     private ImageView profileImageView;
     private TextView nameTextView;
+    private TextView emailTextView;
     private TextView countryTextView;
     private TextView distanceTextView;
     private String userId;
@@ -34,10 +35,10 @@ public class PerfilActivity extends AppCompatActivity {
 
         profileImageView = findViewById(R.id.profileImageView);
         nameTextView = findViewById(R.id.nameTextView);
+        emailTextView = findViewById(R.id.emailTextView);
         countryTextView = findViewById(R.id.countryTextView);
         distanceTextView = findViewById(R.id.distanceTextView);
 
-        // Obtener el userId del Intent
         Intent intent = getIntent();
         userId = intent.getStringExtra("userId");
 
@@ -53,6 +54,7 @@ public class PerfilActivity extends AppCompatActivity {
                     User user = dataSnapshot.getValue(User.class);
                     if (user != null) {
                         nameTextView.setText(user.getFirstName() + " " + user.getLastName());
+                        emailTextView.setText(user.getEmail());
                         countryTextView.setText(user.getCountry());
                         distanceTextView.setText("Km recorridos: " + user.getDistanceTraveled());
 
@@ -66,8 +68,9 @@ public class PerfilActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Manejar error de consulta
+
             }
         });
     }
 }
+

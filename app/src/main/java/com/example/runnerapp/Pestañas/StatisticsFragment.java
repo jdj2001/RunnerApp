@@ -90,7 +90,7 @@ public class StatisticsFragment extends Fragment {
                     Activity activity = snapshot.getValue(Activity.class);
                     if (activity != null) {
                         double distance = activity.getDistance();
-                        double calories = activity.getCaloriesBurned(); // Use calories from database
+                        double calories = activity.getCaloriesBurned();
                         totalKms += distance;
                         totalCalories += calories;
 
@@ -121,7 +121,6 @@ public class StatisticsFragment extends Fragment {
                     }
                 }
 
-                // Update UI with calculated values
                 totalKmsTextView.setText(String.format("Km recorridos hasta el momento: %.2f", totalKms));
                 totalCaloriesTextView.setText(String.format("Calorías quemadas hasta el momento: %d", totalCalories));
                 kmsMonthTextView.setText(String.format("Km recorridos este mes: %.2f", currentMonthKms));
@@ -129,7 +128,6 @@ public class StatisticsFragment extends Fragment {
                 weekComparisonTextView.setText(String.format("Comparativo de km (Semana): %.2f vs %.2f", currentWeekKms, previousWeekKms));
                 monthComparisonTextView.setText(String.format("Comparativo de km (Mes): %.2f vs %.2f", currentMonthKms, previousMonthKms));
 
-                // Comparativos de calorías
                 String weekCaloriesComparison = String.format("Comparativo de calorías (Semana): %d vs %d", currentWeekCalories, previousWeekCalories);
                 String monthCaloriesComparison = String.format("Comparativo de calorías (Mes): %d vs %d", currentMonthCalories, previousMonthCalories);
 
@@ -139,7 +137,7 @@ public class StatisticsFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle possible errors.
+
             }
         });
     }

@@ -3,7 +3,7 @@ package com.example.runnerapp;
 public class Race {
     private String raceId;
     private float distance;
-    private String elapsedMillis; // Sigue como String
+    private String elapsedMillis;
     private double caloriesBurned;
 
     public Race(String raceId, float distance, String elapsedMillis, double caloriesBurned) {
@@ -13,7 +13,6 @@ public class Race {
         this.caloriesBurned = caloriesBurned;
     }
 
-    // Métodos getters y setters
     public String getRaceId() {
         return raceId;
     }

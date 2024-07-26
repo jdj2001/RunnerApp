@@ -26,7 +26,7 @@
         android:layout_below="@id/chronometer"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
-        android:text="Distance: 0 m"
+        android:text="Distancia: 0 m"
         android:textColor="#000000" />
 
     <Button
@@ -36,7 +36,7 @@
         android:layout_below="@id/distanceTextView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
-        android:text="Start" />
+        android:text="Comenzar" />
 
     <Button
         android:id="@+id/stopButton"
@@ -45,5 +45,5 @@
         android:layout_below="@id/startButton"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
-        android:text="Stop" />
+        android:text="Parar" />
 </RelativeLayout>

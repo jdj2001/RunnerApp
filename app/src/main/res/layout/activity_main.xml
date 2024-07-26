@@ -14,13 +14,13 @@
         android:background="#AFC170"
         android:theme="?attr/actionBarTheme"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:title="RunnerApp"
-        android:titleTextColor="#FFFFFF">
+        app:title="RunnerAppGrupo#3"
+        app:titleTextColor="#000000">
 
         <ImageButton
             android:id="@+id/profile_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_gravity="end"
             android:background="@null"
             android:src="@drawable/ic_profile" />
@@ -40,6 +40,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="#AFC170"
-        app:menu="@menu/bottom_navigation_menu"/>
+        app:menu="@menu/bottom_navigation_menu"
+        app:itemIconTint="@color/black"
+        app:itemTextColor="@color/black"/>
 
 </RelativeLayout>

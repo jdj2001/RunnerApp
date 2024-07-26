@@ -77,9 +77,7 @@ public class RegisterActivity extends AppCompatActivity {
         profileImageView = findViewById(R.id.profileImageView);
         progressBar = findViewById(R.id.progressBar);
 
-        // Obtener la lista de países desde strings.xml
         String[] countries = getResources().getStringArray(R.array.countries_array);
-        // Crear y configurar el adaptador para el Spinner
         CountrySpinnerAdapter adapter = new CountrySpinnerAdapter(this, R.layout.spinner_item_country, countries);
         countrySpinner.setAdapter(adapter);
 
@@ -113,7 +111,7 @@ public class RegisterActivity extends AppCompatActivity {
         String country = countrySpinner.getSelectedItem().toString();
 
         if (email.isEmpty() || password.isEmpty() || firstName.isEmpty() || lastName.isEmpty()) {
-            Toast.makeText(this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Por favor, llene todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -138,12 +136,10 @@ public class RegisterActivity extends AppCompatActivity {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task1) {
                                                 if (task1.isSuccessful()) {
-                                                    // Upload image to Firebase Storage and get the URL
                                                     if (selectedImageUri != null) {
                                                         uploadImageToFirebase(user.getUid(), new OnImageUploadListener() {
                                                             @Override
                                                             public void onImageUploaded(String profileImageUrl) {
-                                                                // Save additional user data to Firebase Database
                                                                 saveUserData(user.getUid(), email, firstName, lastName, country, profileImageUrl);
 
                                                                 // Send verification email
@@ -152,7 +148,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                                                             @Override
                                                             public void onImageUploadFailed() {
-                                                                Toast.makeText(RegisterActivity.this, "Failed to upload profile image.", Toast.LENGTH_SHORT).show();
+                                                                Toast.makeText(RegisterActivity.this, "Fallo al actualizar perfil", Toast.LENGTH_SHORT).show();
                                                             }
                                                         });
                                                     } else {
@@ -163,13 +159,13 @@ public class RegisterActivity extends AppCompatActivity {
                                                         sendVerificationEmail(user);
                                                     }
                                                 } else {
-                                                    Toast.makeText(RegisterActivity.this, "Failed to update profile.", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(RegisterActivity.this, "Fallo al actualizar perfil", Toast.LENGTH_SHORT).show();
                                                 }
                                             }
                                         });
                             }
                         } else {
-                            Toast.makeText(RegisterActivity.this, "Registration failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, "Resgitro fallido", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -271,7 +267,7 @@ public class RegisterActivity extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openCamera();
             } else {
-                Toast.makeText(this, "Camera permission is required to use camera.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Permisos de cámara son necesarios", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -282,10 +278,10 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(RegisterActivity.this, "Registration successful. Verification email sent.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, "Registro exitoso. Verificación de correo enviado", Toast.LENGTH_SHORT).show();
                             finish();
                         } else {
-                            Toast.makeText(RegisterActivity.this, "Failed to send verification email.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, "Fallo al enviar verificación de correo", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

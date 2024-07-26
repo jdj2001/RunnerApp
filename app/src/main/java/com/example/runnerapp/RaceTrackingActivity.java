@@ -94,9 +94,6 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
             finish();
         });
 
-
-
-        // Check permissions on creation
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
@@ -195,8 +192,6 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
                         }
                     }
                     lastLocation = location;
-
-                    // Agregar punto a la lista de ruta
                     routePoints.add(new LatLng(location.getLatitude(), location.getLongitude()));
 
                     updateUI();
@@ -239,7 +234,6 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
             double caloriesBurned = calculateCaloriesBurned((float) distanceInKm);
             String formattedTime = formatElapsedTime(elapsedMillis);
 
-            // Convertir la lista de puntos a JSON
             Gson gson = new Gson();
             String routeJson = gson.toJson(routePoints);
 
