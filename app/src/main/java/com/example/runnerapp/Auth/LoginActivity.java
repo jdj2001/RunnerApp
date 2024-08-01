@@ -16,9 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import Configuracion.FirebaseConfig;
+import com.example.runnerapp.Models.FirebaseConfig;
 
-import com.example.runnerapp.MainActivity;
+import com.example.runnerapp.Tabs.MainActivity;
 import com.example.runnerapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;

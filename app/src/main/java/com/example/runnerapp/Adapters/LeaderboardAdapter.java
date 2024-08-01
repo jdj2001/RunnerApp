@@ -1,4 +1,4 @@
-package com.example.runnerapp.Pestañas;
+package com.example.runnerapp.Adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;

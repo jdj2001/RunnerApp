@@ -1,4 +1,4 @@
-package com.example.runnerapp.Pestañas;
+package com.example.runnerapp.Adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,10 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.runnerapp.R;
 import com.example.runnerapp.Models.Activity;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.ProgressViewHolder> {
 

@@ -1,4 +1,4 @@
-package com.example.runnerapp;
+package com.example.runnerapp.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.runnerapp.R;
 
 public class CountrySpinnerAdapter extends ArrayAdapter<String> {
     private final Context context;

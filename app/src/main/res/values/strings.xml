@@ -8,6 +8,7 @@
         <item>Argentina</item>
         <item>Honduras</item>
     </string-array>
+    <string name="profile_image">Profile Image</string>
 
     <string name="distance_text">Distancia: %1$.2f metros</string>
 

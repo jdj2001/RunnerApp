@@ -1,4 +1,4 @@
-package com.example.runnerapp.Pestañas;
+package com.example.runnerapp.Tabs;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,7 +18,6 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.runnerapp.Auth.EditProfileActivity;
-import com.example.runnerapp.Auth.LoginActivity;
 import com.example.runnerapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

@@ -1,4 +1,4 @@
-package com.example.runnerapp.Pestañas;
+package com.example.runnerapp.Tabs;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.runnerapp.Adapters.LeaderboardAdapter;
 import com.example.runnerapp.R;
 import com.example.runnerapp.Models.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -121,7 +123,6 @@ public class LeaderboardFragment extends Fragment {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // Handle possible errors
                     callback.onCallback("Unknown");
                 }
             });

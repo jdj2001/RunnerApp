@@ -1,4 +1,4 @@
-package com.example.runnerapp;
+package com.example.runnerapp.Models;
 
 public class Race {
     private String raceId;

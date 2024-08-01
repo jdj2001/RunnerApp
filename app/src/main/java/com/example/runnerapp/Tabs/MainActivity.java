@@ -1,4 +1,4 @@
-package com.example.runnerapp;
+package com.example.runnerapp.Tabs;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,14 +12,7 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.runnerapp.Auth.LoginActivity;
-import com.example.runnerapp.Pestañas.FriendsFragment;
-import com.example.runnerapp.Pestañas.HomeFragment;
-import com.example.runnerapp.Pestañas.LeaderboardFragment;
-import com.example.runnerapp.Pestañas.ProfileFragment;
-import com.example.runnerapp.Pestañas.ProgressFragment;
-import com.example.runnerapp.Pestañas.StatisticsFragment;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
+import com.example.runnerapp.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

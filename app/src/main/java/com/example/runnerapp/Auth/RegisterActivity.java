@@ -1,7 +1,6 @@
 package com.example.runnerapp.Auth;
 
 import android.Manifest;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -18,14 +17,12 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.runnerapp.CountrySpinnerAdapter;
+import com.example.runnerapp.Adapters.CountrySpinnerAdapter;
 import com.example.runnerapp.R;
-import com.example.runnerapp.Models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -43,8 +40,6 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
-
-import Configuracion.FirebaseConfig;
 
 public class RegisterActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -117,7 +112,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         progressBar.setVisibility(View.VISIBLE);
 
-        // Create user in Firebase Authentication
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -126,7 +120,6 @@ public class RegisterActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             FirebaseUser user = auth.getCurrentUser();
                             if (user != null) {
-                                // Update user profile
                                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                         .setDisplayName(firstName + " " + lastName)
                                         .setPhotoUri(selectedImageUri)
@@ -142,7 +135,6 @@ public class RegisterActivity extends AppCompatActivity {
                                                             public void onImageUploaded(String profileImageUrl) {
                                                                 saveUserData(user.getUid(), email, firstName, lastName, country, profileImageUrl);
 
-                                                                // Send verification email
                                                                 sendVerificationEmail(user);
                                                             }
 
@@ -152,10 +144,8 @@ public class RegisterActivity extends AppCompatActivity {
                                                             }
                                                         });
                                                     } else {
-                                                        // Save user data without profile image URL
                                                         saveUserData(user.getUid(), email, firstName, lastName, country, null);
 
-                                                        // Send verification email
                                                         sendVerificationEmail(user);
                                                     }
                                                 } else {

@@ -1,4 +1,4 @@
-package com.example.runnerapp;
+package com.example.runnerapp.Adapters;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -18,9 +18,10 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.runnerapp.Models.Activity;
+import com.example.runnerapp.Models.Race;
+import com.example.runnerapp.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;

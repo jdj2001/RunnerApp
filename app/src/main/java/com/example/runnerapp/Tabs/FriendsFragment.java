@@ -1,4 +1,4 @@
-package com.example.runnerapp.Pestañas;
+package com.example.runnerapp.Tabs;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,9 +7,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,10 +16,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.runnerapp.Models.FirebaseOperations;
-import com.example.runnerapp.Pestañas.FriendsAdapter;
+import com.example.runnerapp.Adapters.FriendsAdapter;
 import com.example.runnerapp.Models.User;
-import com.example.runnerapp.PerfilActivity;
 import com.example.runnerapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

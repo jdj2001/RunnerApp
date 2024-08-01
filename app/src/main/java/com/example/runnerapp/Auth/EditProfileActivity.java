@@ -24,7 +24,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
-import com.example.runnerapp.CountrySpinnerAdapter;
+import com.example.runnerapp.Adapters.CountrySpinnerAdapter;
 import com.example.runnerapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;

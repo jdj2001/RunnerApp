@@ -1,8 +1,7 @@
-package com.example.runnerapp.Pestañas;
+package com.example.runnerapp.Tabs;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.runnerapp.Adapters.ProgressAdapter;
 import com.example.runnerapp.R;
 import com.example.runnerapp.Models.Activity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,9 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ProgressFragment extends Fragment {
 

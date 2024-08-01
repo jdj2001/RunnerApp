@@ -1,4 +1,4 @@
-package com.example.runnerapp.Pestañas;
+package com.example.runnerapp.Tabs;
 
 import android.Manifest;
 import android.content.Intent;
@@ -18,7 +18,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.runnerapp.R;
-import com.example.runnerapp.RaceTrackingActivity;
+import com.example.runnerapp.Adapters.RaceTrackingActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 

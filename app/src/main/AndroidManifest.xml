@@ -73,28 +73,24 @@
             android:exported="true">
         </activity>
 
+
         <activity
-            android:name=".GPSTracker"
+            android:name=".Adapters.RaceTrackingActivity"
             android:exported="true">
         </activity>
 
         <activity
-            android:name=".RaceTrackingActivity"
+            android:name=".Tabs.PerfilActivity"
             android:exported="true">
         </activity>
 
         <activity
-            android:name=".PerfilActivity"
+            android:name=".Adapters.CountrySpinnerAdapter"
             android:exported="true">
         </activity>
 
         <activity
-            android:name=".CountrySpinnerAdapter"
-            android:exported="true">
-        </activity>
-
-        <activity
-            android:name=".Race"
+            android:name=".Models.Race"
             android:exported="true">
         </activity>
 
@@ -121,52 +117,52 @@
         </activity>
 
         <activity
-            android:name=".Pestañas.FriendsAdapter"
+            android:name=".Adapters.FriendsAdapter"
             android:exported="true">
         </activity>
 
         <activity
-            android:name=".Pestañas.FriendsFragment"
+            android:name=".Tabs.FriendsFragment"
             android:exported="true">
         </activity>
 
         <activity
-            android:name=".Pestañas.HomeFragment"
+            android:name=".Tabs.HomeFragment"
             android:exported="true">
         </activity>
 
         <activity
-            android:name=".Pestañas.LeaderboardAdapter"
+            android:name=".Adapters.LeaderboardAdapter"
             android:exported="true">
         </activity>
 
         <activity
-            android:name=".Pestañas.LeaderboardFragment"
+            android:name=".Tabs.LeaderboardFragment"
             android:exported="true">
         </activity>
 
         <activity
-            android:name=".Pestañas.ProfileFragment"
+            android:name=".Tabs.ProfileFragment"
             android:exported="true">
         </activity>
 
         <activity
-            android:name=".Pestañas.ProgressFragment"
+            android:name=".Tabs.ProgressFragment"
             android:exported="true">
         </activity>
 
         <activity
-            android:name=".Pestañas.ProgressAdapter"
+            android:name=".Adapters.ProgressAdapter"
             android:exported="true">
         </activity>
 
         <activity
-            android:name=".Pestañas.StatisticsFragment"
+            android:name=".Tabs.StatisticsFragment"
             android:exported="true">
         </activity>
 
         <activity
-            android:name=".MainActivity"
+            android:name=".Tabs.MainActivity"
             android:exported="true" />
     </application>
 
