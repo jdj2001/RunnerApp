@@ -184,7 +184,7 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            // Optionally, notify user or handle successful save
+                            Toast.makeText(RegisterActivity.this, "Datos guardados con exito", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(RegisterActivity.this, "Error al guardar datos del usuario", Toast.LENGTH_SHORT).show();
                         }

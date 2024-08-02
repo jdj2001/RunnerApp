@@ -234,33 +234,33 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
                 if (snapshot.exists() && snapshot.hasChild("weight")) {
                     userWeight = snapshot.child("weight").getValue(Double.class);
                 } else {
-                    userWeight = 70.0; // Peso por defecto si no se encuentra en Firebase
+                    userWeight = 70.0;
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e(TAG, "Error al obtener el peso del usuario", error.toException());
-                userWeight = 70.0; // Peso por defecto en caso de error
+                userWeight = 70.0;
             }
         });
     }
 
     private double calculateMET(double speed) {
         if (speed < 8) {
-            return 7.0; // Caminata rápida
+            return 7.0;
         } else if (speed < 12) {
-            return 11.0; // Carrera moderada
+            return 11.0;
         } else {
-            return 16.0; // Carrera rápida
+            return 16.0;
         }
     }
 
     private double calculateCaloriesBurned(float distanceInKm, long elapsedTimeMillis) {
-        double speed = distanceInKm / (elapsedTimeMillis / 3600000.0); // Convertir tiempo de milisegundos a horas
+        double speed = distanceInKm / (elapsedTimeMillis / 3600000.0);
         double MET = calculateMET(speed);
-        double factorDeCorreccion = 1.05; // Factor de corrección, ajusta según sea necesario
-        return MET * userWeight * (elapsedTimeMillis / 3600000.0) * factorDeCorreccion; // Calorías quemadas
+        double factorDeCorreccion = 1.05;
+        return MET * userWeight * (elapsedTimeMillis / 3600000.0) * factorDeCorreccion;
     }
 
     private void saveRaceData() {
@@ -268,7 +268,7 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
         String raceId = racesRef.push().getKey();
 
         if (raceId != null) {
-            double distanceInKm = totalDistance / 1000.00; // Convertir a kilómetros
+            double distanceInKm = totalDistance / 1000.00;
             double caloriesBurned = calculateCaloriesBurned((float) distanceInKm, elapsedMillis);
             String formattedTime = formatElapsedTime(elapsedMillis);
 
@@ -302,7 +302,6 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
                         double newDistance = user.getDistanceTraveled() + distance;
                         double newCalories = user.getCaloriesBurned() + calories;
 
-                        // Actualizar los datos del usuario
                         userRef.child("distanceTraveled").setValue(newDistance);
                         userRef.child("caloriesBurned").setValue(newCalories);
                     }

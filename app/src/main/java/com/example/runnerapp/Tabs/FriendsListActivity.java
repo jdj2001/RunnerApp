@@ -128,7 +128,7 @@ public class FriendsListActivity extends AppCompatActivity {
                         friendsList.remove(friend);
                         friendsListAdapter.notifyDataSetChanged();
                         Toast.makeText(FriendsListActivity.this, "Amigo eliminado", Toast.LENGTH_SHORT).show();
-                        loadFriendsList(); // Actualiza la lista de amigos
+                        loadFriendsList();
                     } else {
                         Toast.makeText(FriendsListActivity.this, "Error al eliminar amigo", Toast.LENGTH_SHORT).show();
                     }
