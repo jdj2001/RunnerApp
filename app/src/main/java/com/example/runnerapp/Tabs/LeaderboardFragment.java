@@ -1,6 +1,7 @@
 package com.example.runnerapp.Tabs;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ public class LeaderboardFragment extends Fragment {
 
     private FirebaseAuth mAuth;
     private DatabaseReference usersRef;
+    private DatabaseReference friendsRef;
 
     private List<User> leaderboardUsers;
 
@@ -53,6 +55,7 @@ public class LeaderboardFragment extends Fragment {
 
         if (currentUser != null) {
             usersRef = FirebaseDatabase.getInstance().getReference("users");
+            friendsRef = FirebaseDatabase.getInstance().getReference("friends").child(currentUser.getUid());
 
             loadLeaderboardUsers();
         }
@@ -61,37 +64,59 @@ public class LeaderboardFragment extends Fragment {
     }
 
     private void loadLeaderboardUsers() {
-        getUserCountry(new UserCountryCallback() {
-            @Override
-            public void onCallback(String country) {
-                usersRef.orderByChild("country").equalTo(country).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        leaderboardUsers.clear();
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            User user = snapshot.getValue(User.class);
-                            if (user != null) {
-                                leaderboardUsers.add(user);
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String currentUserId = currentUser.getUid();
+
+            DatabaseReference userRef = usersRef.child(currentUserId).child("friends");
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    // Obtener la lista de IDs de amigos
+                    List<String> friendIds = new ArrayList<>();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        friendIds.add(snapshot.getKey());
+                    }
+
+                    // Agregar el ID del usuario logueado a la lista
+                    friendIds.add(currentUserId);
+
+                    // Cargar los datos de los usuarios (incluidos los amigos)
+                    usersRef.orderByChild("userId").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            leaderboardUsers.clear();
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                User user = snapshot.getValue(User.class);
+                                if (user != null && friendIds.contains(user.getUserId())) {
+                                    leaderboardUsers.add(user);
+                                }
                             }
+
+                            // Ordenar la lista por distancia recorrida
+                            Collections.sort(leaderboardUsers, new Comparator<User>() {
+                                @Override
+                                public int compare(User u1, User u2) {
+                                    return Double.compare(u2.getDistanceTraveled(), u1.getDistanceTraveled());
+                                }
+                            });
+
+                            leaderboardAdapter.notifyDataSetChanged();
                         }
 
-                        Collections.sort(leaderboardUsers, new Comparator<User>() {
-                            @Override
-                            public int compare(User u1, User u2) {
-                                return Double.compare(u2.getDistanceTraveled(), u1.getDistanceTraveled());
-                            }
-                        });
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            // Manejar el error
+                        }
+                    });
+                }
 
-                        leaderboardAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // Manejar el error
+                }
+            });
+        }
     }
 
 

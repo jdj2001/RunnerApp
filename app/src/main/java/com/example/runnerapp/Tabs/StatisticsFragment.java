@@ -66,16 +66,16 @@ public class StatisticsFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 double totalKms = 0;
-                int totalCalories = 0;
+                double totalCalories = 0;
                 double currentWeekKms = 0;
                 double previousWeekKms = 0;
                 double currentMonthKms = 0;
                 double previousMonthKms = 0;
 
-                int currentWeekCalories = 0;
-                int previousWeekCalories = 0;
-                int currentMonthCalories = 0;
-                int previousMonthCalories = 0;
+                double currentWeekCalories = 0;
+                double previousWeekCalories = 0;
+                double currentMonthCalories = 0;
+                double previousMonthCalories = 0;
 
                 Calendar calendar = Calendar.getInstance();
                 int currentMonth = calendar.get(Calendar.MONTH);
@@ -119,15 +119,16 @@ public class StatisticsFragment extends Fragment {
                     }
                 }
 
+                // Aplicar formato con dos dígitos después del punto decimal
                 totalKmsTextView.setText(String.format("Km recorridos hasta el momento: %.2f", totalKms));
-                totalCaloriesTextView.setText(String.format("Calorías quemadas hasta el momento: %d", totalCalories));
+                totalCaloriesTextView.setText(String.format("Calorías quemadas hasta el momento: %.2f", totalCalories));
                 kmsMonthTextView.setText(String.format("Km recorridos este mes: %.2f", currentMonthKms));
-                caloriesMonthTextView.setText(String.format("Calorías quemadas este mes: %d", currentMonthCalories));
+                caloriesMonthTextView.setText(String.format("Calorías quemadas este mes: %.2f", currentMonthCalories));
                 weekComparisonTextView.setText(String.format("Comparativo de km (Semana): %.2f vs %.2f", currentWeekKms, previousWeekKms));
                 monthComparisonTextView.setText(String.format("Comparativo de km (Mes): %.2f vs %.2f", currentMonthKms, previousMonthKms));
 
-                String weekCaloriesComparison = String.format("Comparativo de calorías (Semana): %d vs %d", currentWeekCalories, previousWeekCalories);
-                String monthCaloriesComparison = String.format("Comparativo de calorías (Mes): %d vs %d", currentMonthCalories, previousMonthCalories);
+                String weekCaloriesComparison = String.format("Comparativo de calorías (Semana): %.2f vs %.2f", currentWeekCalories, previousWeekCalories);
+                String monthCaloriesComparison = String.format("Comparativo de calorías (Mes): %.2f vs %.2f", currentMonthCalories, previousMonthCalories);
 
                 weekComparisonTextView.append("\n" + weekCaloriesComparison);
                 monthComparisonTextView.append("\n" + monthCaloriesComparison);
@@ -140,5 +141,6 @@ public class StatisticsFragment extends Fragment {
         });
     }
 }
+
 
 

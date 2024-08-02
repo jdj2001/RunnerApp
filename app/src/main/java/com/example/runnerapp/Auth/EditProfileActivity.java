@@ -61,6 +61,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private EditText editLastName;
     private EditText editNewPassword;
     private EditText editCurrentPassword;
+    private EditText editWeight; // Añadir esto
     private Spinner editCountrySpinner;
     private Button selectPhotoButton;
     private Button capturePhotoButton;
@@ -86,6 +87,7 @@ public class EditProfileActivity extends AppCompatActivity {
         editLastName = findViewById(R.id.edit_last_name);
         editNewPassword = findViewById(R.id.edit_new_password);
         editCurrentPassword = findViewById(R.id.edit_current_password);
+        editWeight = findViewById(R.id.edit_weight); // Inicializar esto
         editCountrySpinner = findViewById(R.id.edit_country_spinner);
         selectPhotoButton = findViewById(R.id.select_photo_button);
         capturePhotoButton = findViewById(R.id.capture_photo_button);
@@ -154,10 +156,14 @@ public class EditProfileActivity extends AppCompatActivity {
                         String firstName = snapshot.child("firstName").getValue(String.class);
                         String lastName = snapshot.child("lastName").getValue(String.class);
                         String country = snapshot.child("country").getValue(String.class);
+                        Double weight = snapshot.child("weight").getValue(Double.class); // Leer el peso como Double
                         currentProfileImageUrl = snapshot.child("profileImageUrl").getValue(String.class);
 
                         editFirstName.setText(firstName);
                         editLastName.setText(lastName);
+                        if (weight != null) {
+                            editWeight.setText(String.valueOf(weight)); // Mostrar el peso como String
+                        }
 
                         if (currentProfileImageUrl != null && !currentProfileImageUrl.isEmpty()) {
                             Glide.with(EditProfileActivity.this)
@@ -190,7 +196,15 @@ public class EditProfileActivity extends AppCompatActivity {
         final String newPassword = editNewPassword.getText().toString().trim();
         final String currentPassword = editCurrentPassword.getText().toString().trim();
         final String country = editCountrySpinner.getSelectedItem().toString();
+        final String weightStr = editWeight.getText().toString().trim(); // Obtener el peso como String
 
+        Double weight = null;
+        try {
+            weight = Double.parseDouble(weightStr); // Convertir a Double
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Por favor, ingresa un peso válido", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -220,6 +234,9 @@ public class EditProfileActivity extends AppCompatActivity {
             updates.put("firstName", firstName);
             updates.put("lastName", lastName);
             updates.put("country", country);
+            if (weight != null) {
+                updates.put("weight", weight); // Actualizar el peso como Double
+            }
 
             usersRef.child(currentUserId)
                     .updateChildren(updates)

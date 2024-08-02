@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.example.runnerapp.Models.Activity;
 import com.example.runnerapp.Models.Race;
+import com.example.runnerapp.Models.User;
 import com.example.runnerapp.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -34,8 +35,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
@@ -61,9 +65,10 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
     private float totalDistance;
     private long elapsedMillis;
     private String userId;
+    private double userWeight;
 
     private Location lastLocation;
-    private GoogleMap mMap;
+    GoogleMap mMap;
     private Marker destinationMarker;
     private SupportMapFragment mapFragment;
 
@@ -101,6 +106,8 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
         } else {
             initializeMap();
         }
+
+        fetchUserWeight();
     }
 
     private void initializeMap() {
@@ -209,7 +216,6 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
     }
 
-
     private void stopLocationUpdates() {
         if (locationCallback != null) {
             fusedLocationClient.removeLocationUpdates(locationCallback);
@@ -220,10 +226,41 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
         distanceTextView.setText(String.format(Locale.getDefault(), "%.2f metros", totalDistance));
     }
 
-    private double calculateCaloriesBurned(float distanceInKm) {
-        double MET = 8;
-        double weight = 70;
-        return MET * weight * distanceInKm;
+    private void fetchUserWeight() {
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists() && snapshot.hasChild("weight")) {
+                    userWeight = snapshot.child("weight").getValue(Double.class);
+                } else {
+                    userWeight = 70.0; // Peso por defecto si no se encuentra en Firebase
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error al obtener el peso del usuario", error.toException());
+                userWeight = 70.0; // Peso por defecto en caso de error
+            }
+        });
+    }
+
+    private double calculateMET(double speed) {
+        if (speed < 8) {
+            return 7.0; // Caminata rápida
+        } else if (speed < 12) {
+            return 11.0; // Carrera moderada
+        } else {
+            return 16.0; // Carrera rápida
+        }
+    }
+
+    private double calculateCaloriesBurned(float distanceInKm, long elapsedTimeMillis) {
+        double speed = distanceInKm / (elapsedTimeMillis / 3600000.0); // Convertir tiempo de milisegundos a horas
+        double MET = calculateMET(speed);
+        double factorDeCorreccion = 1.05; // Factor de corrección, ajusta según sea necesario
+        return MET * userWeight * (elapsedTimeMillis / 3600000.0) * factorDeCorreccion; // Calorías quemadas
     }
 
     private void saveRaceData() {
@@ -231,8 +268,8 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
         String raceId = racesRef.push().getKey();
 
         if (raceId != null) {
-            double distanceInKm = totalDistance / 1000.0; // Convertir a kilómetros
-            double caloriesBurned = calculateCaloriesBurned((float) distanceInKm);
+            double distanceInKm = totalDistance / 1000.00; // Convertir a kilómetros
+            double caloriesBurned = calculateCaloriesBurned((float) distanceInKm, elapsedMillis);
             String formattedTime = formatElapsedTime(elapsedMillis);
 
             Gson gson = new Gson();
@@ -240,7 +277,10 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
 
             Race race = new Race(raceId, (float) distanceInKm, formattedTime, caloriesBurned);
             racesRef.child(raceId).setValue(race)
-                    .addOnSuccessListener(aVoid -> Toast.makeText(RaceTrackingActivity.this, "Datos de carrera guardados", Toast.LENGTH_SHORT).show())
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(RaceTrackingActivity.this, "Datos de carrera guardados", Toast.LENGTH_SHORT).show();
+                        updateUserStats(distanceInKm, caloriesBurned);
+                    })
                     .addOnFailureListener(e -> Toast.makeText(RaceTrackingActivity.this, "Error al guardar datos de carrera", Toast.LENGTH_SHORT).show());
 
             String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
@@ -250,6 +290,31 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
         }
     }
 
+    private void updateUserStats(final double distance, final double calories) {
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    User user = dataSnapshot.getValue(User.class);
+                    if (user != null) {
+                        double newDistance = user.getDistanceTraveled() + distance;
+                        double newCalories = user.getCaloriesBurned() + calories;
+
+                        // Actualizar los datos del usuario
+                        userRef.child("distanceTraveled").setValue(newDistance);
+                        userRef.child("caloriesBurned").setValue(newCalories);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(RaceTrackingActivity.this, "Error al actualizar datos del usuario", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     private String formatElapsedTime(long elapsedMillis) {
         long seconds = (elapsedMillis / 1000) % 60;

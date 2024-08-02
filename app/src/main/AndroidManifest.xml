@@ -99,7 +99,20 @@
             android:exported="true">
         </activity>
 
+        <activity
+            android:name=".Tabs.PendingRequestsActivity"
+            android:exported="true">
+        </activity>
 
+        <activity
+            android:name=".Adapters.PendingRequestsAdapter"
+            android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".Tabs.FriendsListActivity"
+            android:exported="true">
+        </activity>
 
         <activity
             android:name=".Models.Activity"

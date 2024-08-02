@@ -1,6 +1,7 @@
 package com.example.runnerapp.Tabs;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,10 +23,16 @@ import com.example.runnerapp.R;
 import com.example.runnerapp.Adapters.RaceTrackingActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class HomeFragment extends Fragment {
 
     private Button startRaceButton;
+    private Button userWeightButton;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
 
     @Nullable
@@ -33,6 +41,7 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         startRaceButton = view.findViewById(R.id.startRaceButton);
+        userWeightButton = view.findViewById(R.id.userWeightButton);
         TextView welcomeTextView = view.findViewById(R.id.welcomeTextView);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -51,6 +60,8 @@ public class HomeFragment extends Fragment {
                 startRaceTrackingActivity();
             }
         });
+
+        userWeightButton.setOnClickListener(v -> showWeightDialog());
 
         return view;
     }
@@ -73,4 +84,49 @@ public class HomeFragment extends Fragment {
             }
         }
     }
+
+    private void showWeightDialog() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
+
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    double currentWeight = 0.0;
+                    if (snapshot.exists() && snapshot.hasChild("weight")) {
+                        currentWeight = snapshot.child("weight").getValue(Double.class);
+                    }
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Actualizar Peso");
+
+                    View dialogView = getLayoutInflater().inflate(R.layout.dialog_update_weight, null);
+                    EditText currentWeightEditText = dialogView.findViewById(R.id.currentWeightEditText);
+                    EditText newWeightEditText = dialogView.findViewById(R.id.newWeightEditText);
+
+                    currentWeightEditText.setText(String.valueOf(currentWeight));
+
+                    builder.setView(dialogView)
+                            .setPositiveButton("Actualizar", (dialog, which) -> {
+                                String newWeightStr = newWeightEditText.getText().toString().trim();
+                                if (!newWeightStr.isEmpty()) {
+                                    double newWeight = Double.parseDouble(newWeightStr);
+                                    userRef.child("weight").setValue(newWeight)
+                                            .addOnSuccessListener(aVoid -> Toast.makeText(getActivity(), "Peso actualizado", Toast.LENGTH_SHORT).show())
+                                            .addOnFailureListener(e -> Toast.makeText(getActivity(), "Error al actualizar el peso", Toast.LENGTH_SHORT).show());
+                                }
+                            })
+                            .setNegativeButton("Cancelar", (dialog, which) -> dialog.dismiss())
+                            .show();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(getActivity(), "Error al obtener el peso actual", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
 }
+

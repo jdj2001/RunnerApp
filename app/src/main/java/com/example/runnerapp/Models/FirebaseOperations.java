@@ -9,14 +9,23 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.example.runnerapp.Models.User;
+
+import java.util.HashMap;
 
 public class FirebaseOperations {
 
-    public static void saveUserData(String userId, String email, String firstName, String lastName, String country, String profileImageUrl) {
+    public static void saveUserData(String userId, String email, String firstName, String lastName, String country, double weight, String profileImageUrl) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userId);
-        User user = new User(userId, email, firstName, lastName, country, profileImageUrl);
+        User user = new User(userId, email, firstName, lastName, country, weight, profileImageUrl, 0.0, 0.0, new HashMap<>());
         databaseReference.setValue(user);
     }
+
+    /*public static void saveUserData(String userId, String email, String firstName, String lastName, String country, double weight, String profileImageUrl) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userId);
+        User user = new User(userId, email, firstName, lastName, country, weight, profileImageUrl, 0.0, new HashMap<>());
+        databaseReference.setValue(user);
+    }*/
 
     public static void saveUserActivity(String userId, String date, double distance, int timeInMilliseconds,
                                         String route, double caloriesBurned, String raceId, String elapsedMillis) {
@@ -33,48 +42,7 @@ public class FirebaseOperations {
         return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 
-    /*
-    public static void sendFriendRequest(String senderId, String receiverId) {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users")
-                .child(receiverId).child("friendRequests").child(senderId);
-        databaseReference.setValue(true);
-    }
-
-    public static void acceptFriendRequest(String userId, String friendId) {
-        DatabaseReference userFriendsRef = FirebaseDatabase.getInstance().getReference("users")
-                .child(userId).child("friends").child(friendId);
-        DatabaseReference friendFriendsRef = FirebaseDatabase.getInstance().getReference("users")
-                .child(friendId).child("friends").child(userId);
-
-        userFriendsRef.setValue(true);
-        friendFriendsRef.setValue(true);
-
-
-        DatabaseReference userFriendRequestRef = FirebaseDatabase.getInstance().getReference("users")
-                .child(userId).child("friendRequests").child(friendId);
-        userFriendRequestRef.removeValue();
-    }*/
-    /*
-    public static void sendFriendRequest(String userId, String friendId) {
-        DatabaseReference friendRequestsRef = FirebaseDatabase.getInstance().getReference("users").child(friendId).child("friendRequests").child(userId);
-        friendRequestsRef.setValue(true);
-    }
-
-
-    public static void acceptFriendRequest(String userId, String friendId) {
-        DatabaseReference currentUserFriendsRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("friends").child(friendId);
-        DatabaseReference friendUserFriendsRef = FirebaseDatabase.getInstance().getReference("users").child(friendId).child("friends").child(userId);
-
-        currentUserFriendsRef.setValue(true);
-        friendUserFriendsRef.setValue(true);
-
-
-        DatabaseReference friendRequestsRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("friendRequests").child(friendId);
-        friendRequestsRef.removeValue();
-    }*/
-
-
-    public static void addFriend(String currentUserId, String friendId, OnFriendAddedListener listener) {
+    /*public static void addFriend(String currentUserId, String friendId, OnFriendAddedListener listener) {
         DatabaseReference currentUserFriendsRef = FirebaseDatabase.getInstance().getReference("users").child(currentUserId).child("friends").child(friendId);
         DatabaseReference friendUserFriendsRef = FirebaseDatabase.getInstance().getReference("users").child(friendId).child("friends").child(currentUserId);
 
@@ -95,6 +63,58 @@ public class FirebaseOperations {
 
     public interface OnFriendAddedListener {
         void onFriendAdded(boolean success, String message);
+    }*/
+
+    public static void addFriend(String currentUserId, String friendId, OnFriendAddedListener listener) {
+        DatabaseReference currentUserFriendsRef = FirebaseDatabase.getInstance().getReference("users")
+                .child(currentUserId).child("friends").child(friendId);
+        DatabaseReference friendUserFriendsRef = FirebaseDatabase.getInstance().getReference("users")
+                .child(friendId).child("friends").child(currentUserId);
+
+        currentUserFriendsRef.setValue(true).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                friendUserFriendsRef.setValue(true).addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
+                        removeFriendRequest(currentUserId, friendId);
+                        listener.onFriendAdded(true, "Amigo agregado exitosamente");
+                    } else {
+                        listener.onFriendAdded(false, "Error al agregar amigo");
+                    }
+                });
+            } else {
+                listener.onFriendAdded(false, "Error al agregar amigo");
+            }
+        });
+    }
+
+    private static void removeFriendRequest(String currentUserId, String friendId) {
+        DatabaseReference currentUserRequestRef = FirebaseDatabase.getInstance().getReference("users")
+                .child(currentUserId).child("friendRequests").child(friendId);
+        currentUserRequestRef.removeValue();
+
+        DatabaseReference friendRequestRef = FirebaseDatabase.getInstance().getReference("users")
+                .child(friendId).child("friendRequests").child(currentUserId);
+        friendRequestRef.removeValue();
+    }
+
+    public static void sendFriendRequest(String currentUserId, String friendId, OnFriendRequestSentListener listener) {
+        DatabaseReference friendRequestRef = FirebaseDatabase.getInstance().getReference("users")
+                .child(friendId).child("friendRequests").child(currentUserId);
+        friendRequestRef.setValue(true).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                listener.onFriendRequestSent(true, "Solicitud de amistad enviada");
+            } else {
+                listener.onFriendRequestSent(false, "Error al enviar solicitud de amistad");
+            }
+        });
+    }
+
+    public interface OnFriendAddedListener {
+        void onFriendAdded(boolean success, String message);
+    }
+
+    public interface OnFriendRequestSentListener {
+        void onFriendRequestSent(boolean success, String message);
     }
 
     public interface UserCountryCallback {

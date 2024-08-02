@@ -31,7 +31,7 @@ public class ProfileFragment extends Fragment {
 
     private TextView nameTextView, countryTextView, distanceTextView;
     private ImageView profileImageView, countryFlagImageView;
-    private Button editButton, logoutButton;
+    private Button editButton, logoutButton, viewFriendsButton;
 
     @Nullable
     @Override
@@ -45,6 +45,7 @@ public class ProfileFragment extends Fragment {
         countryFlagImageView = view.findViewById(R.id.countryFlagImageView);
         editButton = view.findViewById(R.id.editButton);
         logoutButton = view.findViewById(R.id.logoutButton);
+        viewFriendsButton = view.findViewById(R.id.viewFriendsButton);
 
         loadUserProfile();
 
@@ -52,6 +53,14 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        viewFriendsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), FriendsListActivity.class);
                 startActivity(intent);
             }
         });

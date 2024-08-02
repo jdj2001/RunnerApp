@@ -37,6 +37,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import com.example.runnerapp.Models.User;
+
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +48,7 @@ public class RegisterActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 2;
     private static final int PERMISSION_CAMERA = 101;
 
-    private EditText emailEditText, passwordEditText, firstNameEditText, lastNameEditText;
+    private EditText emailEditText, passwordEditText, firstNameEditText, lastNameEditText, weightEditText;
     private Spinner countrySpinner;
     private Button registerButton, selectPhotoButton, capturePhotoButton;
     private ImageView profileImageView;
@@ -65,6 +67,7 @@ public class RegisterActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.password);
         firstNameEditText = findViewById(R.id.firstName);
         lastNameEditText = findViewById(R.id.lastName);
+        weightEditText = findViewById(R.id.weight);
         countrySpinner = findViewById(R.id.countrySpinner);
         registerButton = findViewById(R.id.registerButton);
         selectPhotoButton = findViewById(R.id.selectPhotoButton);
@@ -103,10 +106,19 @@ public class RegisterActivity extends AppCompatActivity {
         String password = passwordEditText.getText().toString().trim();
         String firstName = firstNameEditText.getText().toString().trim();
         String lastName = lastNameEditText.getText().toString().trim();
+        String weightStr = weightEditText.getText().toString().trim();
         String country = countrySpinner.getSelectedItem().toString();
 
-        if (email.isEmpty() || password.isEmpty() || firstName.isEmpty() || lastName.isEmpty()) {
+        if (email.isEmpty() || password.isEmpty() || firstName.isEmpty() || lastName.isEmpty() || weightStr.isEmpty()) {
             Toast.makeText(this, "Por favor, llene todos los campos", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        double weight;
+        try {
+            weight = Double.parseDouble(weightStr);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Por favor, introduce un peso válido", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -133,7 +145,7 @@ public class RegisterActivity extends AppCompatActivity {
                                                         uploadImageToFirebase(user.getUid(), new OnImageUploadListener() {
                                                             @Override
                                                             public void onImageUploaded(String profileImageUrl) {
-                                                                saveUserData(user.getUid(), email, firstName, lastName, country, profileImageUrl);
+                                                                saveUserData(user.getUid(), email, firstName, lastName, country, weight, profileImageUrl);
 
                                                                 sendVerificationEmail(user);
                                                             }
@@ -144,7 +156,7 @@ public class RegisterActivity extends AppCompatActivity {
                                                             }
                                                         });
                                                     } else {
-                                                        saveUserData(user.getUid(), email, firstName, lastName, country, null);
+                                                        saveUserData(user.getUid(), email, firstName, lastName, country, weight, null);
 
                                                         sendVerificationEmail(user);
                                                     }
@@ -155,26 +167,29 @@ public class RegisterActivity extends AppCompatActivity {
                                         });
                             }
                         } else {
-                            Toast.makeText(RegisterActivity.this, "Resgitro fallido", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, "Registro fallido", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
 
-    private void saveUserData(String userId, String email, String firstName, String lastName, String country, String profileImageUrl) {
+    private void saveUserData(String userId, String email, String firstName, String lastName, String country, double weight, String profileImageUrl) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference usersRef = database.getReference("users");
 
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("email", email);
-        userData.put("firstName", firstName);
-        userData.put("lastName", lastName);
-        userData.put("country", country);
-        if (profileImageUrl != null) {
-            userData.put("profileImageUrl", profileImageUrl);
-        }
+        User user = new User(userId, email, firstName, lastName, country, weight, profileImageUrl, 0.0, 0.0, new HashMap<>());
 
-        usersRef.child(userId).setValue(userData);
+        usersRef.child(userId).setValue(user)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            // Optionally, notify user or handle successful save
+                        } else {
+                            Toast.makeText(RegisterActivity.this, "Error al guardar datos del usuario", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     private void openFileChooser() {

@@ -52,7 +52,10 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         public void bind(User user, int position) {
             positionTextView.setText(String.valueOf(position));
             usernameTextView.setText(user.getFirstName() + " " + user.getLastName());
-            distanceTextView.setText(String.valueOf(user.getDistanceTraveled()) + " km");
+            // Formatear la distancia con dos dígitos después del punto decimal
+            String formattedDistance = String.format("%.2f", user.getDistanceTraveled());
+            distanceTextView.setText(formattedDistance + " km");
         }
     }
 }
+

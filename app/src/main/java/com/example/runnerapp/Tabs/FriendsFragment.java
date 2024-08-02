@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -40,6 +42,7 @@ public class FriendsFragment extends Fragment {
     private FirebaseUser currentUser;
     private String currentUserId;
     private String currentUserCountry;
+    private Button pendingRequestsButton;
 
     @Nullable
     @Override
@@ -49,15 +52,16 @@ public class FriendsFragment extends Fragment {
         searchEditText = view.findViewById(R.id.searchEditText);
         friendsRecyclerView = view.findViewById(R.id.friendsRecyclerView);
         friendsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        pendingRequestsButton = view.findViewById(R.id.pendingRequestsButton);
 
         friendsList = new ArrayList<>();
         filteredList = new ArrayList<>();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        currentUserId = currentUser.getUid();
-
-        usersRef = FirebaseDatabase.getInstance().getReference("users");
 
         if (currentUser != null) {
+            currentUserId = currentUser.getUid();
+            usersRef = FirebaseDatabase.getInstance().getReference("users");
+
             DatabaseReference currentUserRef = usersRef.child(currentUserId);
             currentUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -65,15 +69,20 @@ public class FriendsFragment extends Fragment {
                     User user = dataSnapshot.getValue(User.class);
                     if (user != null) {
                         currentUserCountry = user.getCountry();
+                        Log.d("FriendsFragment", "Current user country: " + currentUserCountry);
                         loadFriends();
+                    } else {
+                        Log.e("FriendsFragment", "User is null.");
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                    Log.e("FriendsFragment", "Error loading current user data: " + databaseError.getMessage());
                 }
             });
+        } else {
+            Log.e("FriendsFragment", "Current user is null.");
         }
 
         friendsAdapter = new FriendsAdapter(filteredList, new FriendsAdapter.OnItemClickListener() {
@@ -97,6 +106,11 @@ public class FriendsFragment extends Fragment {
             public void afterTextChanged(Editable s) {}
         });
 
+        pendingRequestsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), PendingRequestsActivity.class);
+            startActivity(intent);
+        });
+
         return view;
     }
 
@@ -107,8 +121,12 @@ public class FriendsFragment extends Fragment {
                 friendsList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
-                    if (user != null && user.getCountry().equals(currentUserCountry) && !user.getUserId().equals(currentUserId)) {
-                        friendsList.add(user);
+                    if (user != null) {
+                        Log.d("FriendsFragment", "User found: " + user.getUserId() + ", Country: " + user.getCountry());
+                        if (user.getCountry() != null
+                                && user.getCountry().equals(currentUserCountry) && !user.getUserId().equals(currentUserId)) {
+                            friendsList.add(user);
+                        }
                     }
                 }
                 filterFriends(searchEditText.getText().toString());
@@ -116,7 +134,7 @@ public class FriendsFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.e("FriendsFragment", "Error loading user data: " + databaseError.getMessage());
             }
         });
     }
@@ -138,7 +156,7 @@ public class FriendsFragment extends Fragment {
         builder.setItems(new CharSequence[]{"Agregar amigo", "Ver perfil"}, (dialog, which) -> {
             switch (which) {
                 case 0:
-                    addFriend(user);
+                    sendFriendRequest(user);
                     break;
                 case 1:
                     viewProfile(user);
@@ -148,25 +166,15 @@ public class FriendsFragment extends Fragment {
         builder.show();
     }
 
-    private void addFriend(User user) {
-        DatabaseReference currentUserFriendsRef = usersRef.child(currentUserId).child("friends");
-        DatabaseReference friendUserFriendsRef = usersRef.child(user.getUserId()).child("friends");
-
-        currentUserFriendsRef.child(user.getUserId()).setValue(true)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        friendUserFriendsRef.child(currentUserId).setValue(true)
-                                .addOnCompleteListener(task1 -> {
-                                    if (task1.isSuccessful()) {
-                                        Toast.makeText(getContext(), "Amigo agregado", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        Toast.makeText(getContext(), "Error al agregar amigo", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                    } else {
-                        Toast.makeText(getContext(), "Error al agregar amigo", Toast.LENGTH_SHORT).show();
-                    }
-                });
+    private void sendFriendRequest(User user) {
+        DatabaseReference friendRequestRef = usersRef.child(user.getUserId()).child("friendRequests").child(currentUserId);
+        friendRequestRef.setValue(true).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(getContext(), "Solicitud de amistad enviada", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "Error al enviar solicitud de amistad", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void viewProfile(User user) {
@@ -175,3 +183,7 @@ public class FriendsFragment extends Fragment {
         startActivity(intent);
     }
 }
+
+
+
+
