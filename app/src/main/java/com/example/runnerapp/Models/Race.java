@@ -45,4 +45,3 @@ public class Race {
         this.caloriesBurned = caloriesBurned;
     }
 }
-
