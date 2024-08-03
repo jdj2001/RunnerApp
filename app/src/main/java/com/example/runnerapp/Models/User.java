@@ -12,16 +12,14 @@ public class User {
     private double weight;
     private String profileImageUrl;
     private double distanceTraveled;
-    private double caloriesBurned; // Nuevo campo para calorías quemadas
+    private double caloriesBurned;
     private Map<String, Boolean> friends;
 
-    // Constructor por defecto necesario para Firebase
     public User() {
-        this.friends = new HashMap<>(); // Inicializar amigos
-        this.caloriesBurned = 0.0; // Inicializar calorías quemadas
+        this.friends = new HashMap<>();
+        this.caloriesBurned = 0.0;
     }
 
-    // Constructor con todos los parámetros
     public User(String userId, String email, String firstName, String lastName, String country, double weight, String profileImageUrl, double distanceTraveled, double caloriesBurned, Map<String, Boolean> friends) {
         this.userId = userId;
         this.email = email;
@@ -31,8 +29,8 @@ public class User {
         this.weight = weight;
         this.profileImageUrl = profileImageUrl;
         this.distanceTraveled = distanceTraveled;
-        this.caloriesBurned = caloriesBurned; // Inicializar calorías quemadas
-        this.friends = friends != null ? friends : new HashMap<>(); // Asegúrate de inicializar amigos si es nulo
+        this.caloriesBurned = caloriesBurned;
+        this.friends = friends != null ? friends : new HashMap<>();
     }
 
     // Getters y setters

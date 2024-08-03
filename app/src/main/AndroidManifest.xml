@@ -73,106 +73,49 @@
             android:exported="true">
         </activity>
 
-
         <activity
             android:name=".Adapters.RaceTrackingActivity"
             android:exported="true">
         </activity>
+
+
+
 
         <activity
             android:name=".Tabs.PerfilActivity"
             android:exported="true">
         </activity>
 
-        <activity
-            android:name=".Adapters.CountrySpinnerAdapter"
-            android:exported="true">
-        </activity>
 
-        <activity
-            android:name=".Models.Race"
-            android:exported="true">
-        </activity>
 
-        <activity
-            android:name=".Models.User"
-            android:exported="true">
-        </activity>
+
 
         <activity
             android:name=".Tabs.PendingRequestsActivity"
             android:exported="true">
         </activity>
 
-        <activity
-            android:name=".Adapters.PendingRequestsAdapter"
-            android:exported="true">
-        </activity>
+
 
         <activity
             android:name=".Tabs.FriendsListActivity"
             android:exported="true">
         </activity>
 
-        <activity
-            android:name=".Models.Activity"
-            android:exported="true">
-        </activity>
+
 
         <activity
             android:name=".Auth.EditProfileActivity"
             android:exported="true">
         </activity>
 
-        <activity
-            android:name=".Models.FirebaseOperations"
-            android:exported="true">
-        </activity>
 
-        <activity
-            android:name=".Adapters.FriendsAdapter"
-            android:exported="true">
-        </activity>
 
-        <activity
-            android:name=".Tabs.FriendsFragment"
-            android:exported="true">
-        </activity>
 
-        <activity
-            android:name=".Tabs.HomeFragment"
-            android:exported="true">
-        </activity>
 
-        <activity
-            android:name=".Adapters.LeaderboardAdapter"
-            android:exported="true">
-        </activity>
 
-        <activity
-            android:name=".Tabs.LeaderboardFragment"
-            android:exported="true">
-        </activity>
 
-        <activity
-            android:name=".Tabs.ProfileFragment"
-            android:exported="true">
-        </activity>
 
-        <activity
-            android:name=".Tabs.ProgressFragment"
-            android:exported="true">
-        </activity>
-
-        <activity
-            android:name=".Adapters.ProgressAdapter"
-            android:exported="true">
-        </activity>
-
-        <activity
-            android:name=".Tabs.StatisticsFragment"
-            android:exported="true">
-        </activity>
 
         <activity
             android:name=".Tabs.MainActivity"
