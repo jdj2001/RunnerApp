@@ -157,7 +157,9 @@ public class RegisterActivity extends AppCompatActivity {
                                                         });
                                                     } else {
                                                         saveUserData(user.getUid(), email, firstName, lastName, country, weight, null);
-
+														
+														//LLAMAR AL METODO DE CONFIRMACION DE CORREO DESPUÉS DE GUARDAR TODOS
+														//LOS DATOS DEL USUARIO (INCLUIDA LA IMAGEN DE PERFIL)
                                                         sendVerificationEmail(user);
                                                     }
                                                 } else {
@@ -276,6 +278,8 @@ public class RegisterActivity extends AppCompatActivity {
             }
         }
     }
+	
+	//METODO PARA ENVIAR VERIFICACION CORREO
 
     private void sendVerificationEmail(FirebaseUser user) {
         user.sendEmailVerification()
