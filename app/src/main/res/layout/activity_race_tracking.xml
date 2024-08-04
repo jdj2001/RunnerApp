@@ -31,19 +31,35 @@
 
     <Button
         android:id="@+id/startButton"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/distanceTextView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
-        android:text="Comenzar" />
+        android:text="Comenzar"
+        android:textSize="10sp" />
 
     <Button
-        android:id="@+id/stopButton"
-        android:layout_width="wrap_content"
+        android:id="@+id/cancelButton"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/startButton"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
-        android:text="Parar" />
+        android:text="Cancelar carrera"
+        android:textSize="10sp" />
+
+    <Button
+        android:id="@+id/stopButton"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/cancelButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:text="Parar"
+        android:textSize="10sp"
+        android:enabled="false" />
+
+
+
 </RelativeLayout>

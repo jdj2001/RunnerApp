@@ -68,9 +68,11 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
     private double userWeight;
 
     private Location lastLocation;
-    GoogleMap mMap;
+    private GoogleMap mMap;
     private Marker destinationMarker;
     private SupportMapFragment mapFragment;
+    private Button startButton, stopButton;
+    private boolean isRaceInProgress = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,8 +81,10 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
 
         chronometer = findViewById(R.id.chronometer);
         distanceTextView = findViewById(R.id.distanceTextView);
-        Button startButton = findViewById(R.id.startButton);
-        Button stopButton = findViewById(R.id.stopButton);
+        startButton = findViewById(R.id.startButton);
+        stopButton = findViewById(R.id.stopButton);
+        Button cancelButton = findViewById(R.id.cancelButton);
+        stopButton.setEnabled(false);
 
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -90,6 +94,9 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
             totalDistance = 0;
             startChronometer();
             startLocationUpdates();
+            isRaceInProgress = true;
+            startButton.setEnabled(false);
+            stopButton.setEnabled(true);
         });
 
         stopButton.setOnClickListener(v -> {
@@ -97,6 +104,10 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
             stopLocationUpdates();
             saveRaceData();
             Toast.makeText(RaceTrackingActivity.this, "Carrera detenida", Toast.LENGTH_SHORT).show();
+            finish();
+        });
+
+        cancelButton.setOnClickListener(v -> {
             finish();
         });
 
@@ -137,6 +148,9 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
         mMap.setOnMapLongClickListener(latLng -> {
             if (destinationMarker != null) {
                 destinationMarker.remove();
+                mMap.clear();
+                routePoints.clear();
+                totalDistance = 0;
             }
             destinationMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("Destino"));
             drawRouteToDestination(latLng);
@@ -170,18 +184,6 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
         }
     }
 
-    private void startChronometer() {
-        chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
-        chronometer.start();
-        running = true;
-    }
-
-    private void stopChronometer() {
-        chronometer.stop();
-        elapsedMillis = SystemClock.elapsedRealtime() - chronometer.getBase();
-        running = false;
-    }
-
     private void startLocationUpdates() {
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setInterval(5000);
@@ -201,7 +203,6 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
                     }
                     lastLocation = location;
                     routePoints.add(new LatLng(location.getLatitude(), location.getLongitude()));
-
                     updateUI();
                 }
             }
@@ -224,6 +225,18 @@ public class RaceTrackingActivity extends AppCompatActivity implements OnMapRead
 
     private void updateUI() {
         distanceTextView.setText(String.format(Locale.getDefault(), "%.2f metros", totalDistance));
+    }
+
+    private void startChronometer() {
+        chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
+        chronometer.start();
+        running = true;
+    }
+
+    private void stopChronometer() {
+        chronometer.stop();
+        elapsedMillis = SystemClock.elapsedRealtime() - chronometer.getBase();
+        running = false;
     }
 
     private void fetchUserWeight() {

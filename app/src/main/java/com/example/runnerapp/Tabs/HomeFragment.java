@@ -2,9 +2,12 @@ package com.example.runnerapp.Tabs;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,13 +60,33 @@ public class HomeFragment extends Fragment {
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                         LOCATION_PERMISSION_REQUEST_CODE);
             } else {
-                startRaceTrackingActivity();
+                checkLocationEnabledAndStart();
             }
         });
 
         userWeightButton.setOnClickListener(v -> showWeightDialog());
 
         return view;
+    }
+
+    private void checkLocationEnabledAndStart() {
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        if (!isGPSEnabled || !isNetworkEnabled) {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("Habilitar Ubicación")
+                    .setMessage("La ubicación está desactivada. ¿Deseas activarla?")
+                    .setPositiveButton("Sí", (dialog, which) -> {
+                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(intent);
+                    })
+                    .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+                    .show();
+        } else {
+            startRaceTrackingActivity();
+        }
     }
 
     private void startRaceTrackingActivity() {
@@ -78,7 +101,7 @@ public class HomeFragment extends Fragment {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
                     grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                startRaceTrackingActivity();
+                checkLocationEnabledAndStart();
             } else {
                 Toast.makeText(getActivity(), "Permisos de ubicación denegados", Toast.LENGTH_SHORT).show();
             }
@@ -129,4 +152,5 @@ public class HomeFragment extends Fragment {
         }
     }
 }
+
 
