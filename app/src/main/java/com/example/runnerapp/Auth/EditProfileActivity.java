@@ -99,6 +99,7 @@ public class EditProfileActivity extends AppCompatActivity {
         storageReference = FirebaseStorage.getInstance().getReference().child("profile_images");
 
         loadUserProfile();
+        editEmail.setEnabled(false);
 
         selectPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
