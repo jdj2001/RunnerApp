@@ -2,10 +2,12 @@ package com.example.runnerapp.Auth;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,23 +23,37 @@ import com.example.runnerapp.Models.FirebaseConfig;
 
 import com.example.runnerapp.Tabs.MainActivity;
 import com.example.runnerapp.R;
+import com.google.android.gms.auth.api.identity.BeginSignInRequest;
+import com.google.android.gms.auth.api.identity.Identity;
+import com.google.android.gms.auth.api.identity.SignInClient;
+import com.google.android.gms.auth.api.identity.SignInCredential;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginActivity extends AppCompatActivity {
+
+    private static final int REQ_ONE_TAP = 2;
+    private static final String TAG = "LoginActivity";
+
     private EditText emailEditText, passwordEditText;
-    private Button loginButton, registerButton;
+    private Button loginButton, registerButton, googleSignInButton;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
+
+    private SignInClient oneTapClient;
+    private BeginSignInRequest signInRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        auth = FirebaseConfig.getFirebaseAuth();
+        auth = FirebaseAuth.getInstance();
 
         if (auth.getCurrentUser() != null && auth.getCurrentUser().isEmailVerified()) {
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
@@ -50,6 +67,7 @@ public class LoginActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.registerButton);
         progressBar = findViewById(R.id.progressBar);
         Button forgotPasswordButton = findViewById(R.id.forgotPasswordButton);
+        googleSignInButton = findViewById(R.id.googleSignInButton);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,8 +92,76 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
             }
         });
+
+        googleSignInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signInWithGoogle();
+            }
+        });
+
+        oneTapClient = Identity.getSignInClient(this);
+        signInRequest = BeginSignInRequest.builder()
+                .setGoogleIdTokenRequestOptions(
+                        BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
+                                .setSupported(true)
+                                .setServerClientId(getString(R.string.cliente_web_google_auth))
+                                .setFilterByAuthorizedAccounts(false)
+                                .build())
+                .build();
     }
 
+    private void signInWithGoogle() {
+        oneTapClient.beginSignIn(signInRequest)
+                .addOnSuccessListener(this, result -> {
+                    try {
+                        startIntentSenderForResult(result.getPendingIntent().getIntentSender(), REQ_ONE_TAP,
+                                null, 0, 0, 0, null);
+                    } catch (IntentSender.SendIntentException e) {
+                        Log.e(TAG, "Couldn't start One Tap UI: " + e.getLocalizedMessage());
+                    }
+                })
+                .addOnFailureListener(this, e -> {
+                    Log.d(TAG, e.getLocalizedMessage());
+                });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQ_ONE_TAP) {
+            try {
+                SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(data);
+                String idToken = credential.getGoogleIdToken();
+                if (idToken != null) {
+                    AuthCredential firebaseCredential = GoogleAuthProvider.getCredential(idToken, null);
+                    auth.signInWithCredential(firebaseCredential)
+                            .addOnCompleteListener(this, new OnCompleteListener() {
+                                @Override
+                                public void onComplete(@NonNull Task task) {
+                                    if (task.isSuccessful()) {
+                                        FirebaseUser user = auth.getCurrentUser();
+                                        updateUI(user);
+                                    } else {
+                                        Log.w(TAG, "signInWithCredential:failure", task.getException());
+                                        updateUI(null);
+                                    }
+                                }
+                            });
+                }
+            } catch (ApiException e) {
+                Log.e(TAG, "Error getting credential from result: " + e.getLocalizedMessage());
+            }
+        }
+    }
+
+    private void updateUI(FirebaseUser user) {
+        if (user != null) {
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            finish();
+        }
+    }
 
     private void loginUser() {
         String email = emailEditText.getText().toString().trim();
